@@ -2,7 +2,7 @@ import './App.css'
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from './pages/admin/Home';
 import Sidebar from './components/admin/global/Sidebar';
-import Login from './pages/admin/login';
+import Login from './pages/admin/Login';
 import { JobPosting } from './pages/admin/JobPosting';
 import { CreateUser } from './pages/admin/CreateUser';
 import { AllUser } from './pages/admin/AllUser';
