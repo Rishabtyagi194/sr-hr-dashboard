@@ -8,7 +8,7 @@ export const NewUserForm = () => {
           {/* Left Side - Form */}
           <div className="w-full p-8">
             {/* Logo */}
-            <h2 className="text-xl font-bold text-purple-600 mb-6">AUTHLOG</h2>
+            <h2 className="text-xl font-bold text-[#0078db] mb-6">AUTHLOG</h2>
 
             {/* Title */}
             <h3 className="text-2xl font-semibold mb-6">Create User</h3>
@@ -23,7 +23,7 @@ export const NewUserForm = () => {
                   <input
                     type="text"
                     placeholder="First Name"
-                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none "
                   />
                 </div>
                 <div>
@@ -33,7 +33,7 @@ export const NewUserForm = () => {
                   <input
                     type="text"
                     placeholder="Last Name"
-                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none "
                   />
                 </div>
               </div>
@@ -46,7 +46,7 @@ export const NewUserForm = () => {
                 <input
                   type="email"
                   placeholder="Email"
-                  className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none  "
                 />
               </div>
 
@@ -58,7 +58,7 @@ export const NewUserForm = () => {
                 <input
                   type="password"
                   placeholder="Password"
-                  className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none "
                 />
               </div>
 
@@ -70,7 +70,7 @@ export const NewUserForm = () => {
                 <input
                   type="password"
                   placeholder="Confirm Password"
-                  className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none "
                 />
               </div>
 
@@ -79,17 +79,17 @@ export const NewUserForm = () => {
                 <input
                   id="terms"
                   type="checkbox"
-                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                  className="w-4 h-4 text-[#0078db] border-gray-300 rounded focus:ring-purple-500"
                 />
                 <label htmlFor="terms" className="ml-2 text-sm text-gray-600">
-                  I Accept <span className="text-purple-600">Terms And Condition</span>
+                  I Accept <span className="text-[#0078db]">Terms And Condition</span>
                 </label>
               </div>
 
               {/* Button */}
               <button
                 type="submit"
-                className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition"
+                className="w-full bg-[#0078db] text-white py-2 rounded-lg hover:bg-[#0078db] transition"
               >
                 Register
               </button>
@@ -98,7 +98,7 @@ export const NewUserForm = () => {
             {/* Footer */}
             <p className="mt-4 text-sm text-gray-600 text-center">
               Already have an account ?{" "}
-              <a href="/" className="text-purple-600 font-medium hover:underline">
+              <a href="/" className="text-[#0078db] font-medium hover:underline">
                 Sign in
               </a>
             </p>
