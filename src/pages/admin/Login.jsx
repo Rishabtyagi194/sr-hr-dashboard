@@ -74,12 +74,12 @@ const Login = () => {
           </form>
 
           {/* Footer */}
-          <p className="mt-4 text-sm text-gray-600 text-center">
+          {/* <p className="mt-4 text-sm text-gray-600 text-center">
             Don’t have an account ?{" "}
             <a href="/signup" className="text-purple-600 font-medium hover:underline">
               Sign Up
             </a>
-          </p>
+          </p> */}
 
           {/* Copyright */}
           <p className="text-xs text-gray-400 text-center mt-6">

@@ -24,12 +24,12 @@ export const AllUsersTable = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="bg-white shadow-lg rounded-2xl p-6">
-        <h2 className="text-xl font-bold text-purple-600 mb-4">All Users</h2>
+        <h2 className="text-xl font-bold text-[#0078db] mb-4">All Users</h2>
 
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-200 rounded-lg">
             <thead>
-              <tr className="bg-purple-600 text-white text-left text-sm">
+              <tr className="bg-[#0078db] text-white text-left text-sm">
                 <th className="px-4 py-2">#</th>
                 <th className="px-4 py-2">First Name</th>
                 <th className="px-4 py-2">Last Name</th>

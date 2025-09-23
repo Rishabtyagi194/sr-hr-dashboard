@@ -9,29 +9,30 @@ import { AllUser } from './pages/admin/AllUser';
 import { SubNavbar } from './components/admin/global/SubNavbar';
 import { Navbar } from './components/admin/global/Navbar';
 import EditJobPage from './components/admin/JobPostingComponents/EditJobModal';
+import EmployerRegistration from './pages/admin/EmployeeRegistration';
 
 function Layout() {
   const location = useLocation();
 
-  // Hide sidebar on login page
-  const hideSidebar = location.pathname === "/";
+  // Hide sidebar on login and employer registration pages
+  const hideSidebar =
+    location.pathname === "/" || location.pathname === "/employeeresgistration";
 
   return (
     <div className="flex">
       {!hideSidebar && <Sidebar />}
-      
-      <div className={`flex-1 ${!hideSidebar ? "ml-64" : ""}  bg-gray-100 min-h-screen`}>
-      {!hideSidebar && <Navbar />}
+
+      <div className={`flex-1 ${!hideSidebar ? "ml-64" : ""} bg-gray-100 min-h-screen`}>
+        {!hideSidebar && <Navbar />}
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/employeeresgistration" element={<EmployerRegistration />} />
           <Route path="/home" element={<Home />} />
           <Route path="/jobposting" element={<JobPosting />} />
           <Route path="/jobposting/jobs/:id" element={<EditJobPage />} />
           <Route path="/customers" element={<SubNavbar />} />
           <Route path="/createuser" element={<CreateUser />} />
           <Route path="/users" element={<AllUser />} />
-
-
         </Routes>
       </div>
     </div>
