@@ -1,7 +1,10 @@
 import React from 'react'
+import JobPostForm from './HotJobPostForm'
 
 export const Hotvacancy = () => {
   return (
-    <div>Hotvacancy</div>
+    <div>
+        <JobPostForm />
+    </div>
   )
 }
