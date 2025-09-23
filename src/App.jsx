@@ -10,6 +10,7 @@ import { SubNavbar } from './components/admin/global/SubNavbar';
 import { Navbar } from './components/admin/global/Navbar';
 import EditJobPage from './components/admin/JobPostingComponents/EditJobModal';
 import EmployerRegistration from './pages/admin/EmployeeRegistration';
+import { Hotvacancy } from './components/admin/JobPostingComponents/Hotvacancy';
 
 function Layout() {
   const location = useLocation();
@@ -30,9 +31,10 @@ function Layout() {
           <Route path="/home" element={<Home />} />
           <Route path="/jobposting" element={<JobPosting />} />
           <Route path="/jobposting/jobs/:id" element={<EditJobPage />} />
-          <Route path="/customers" element={<SubNavbar />} />
+          <Route path="/resdex" element={<SubNavbar />} />
           <Route path="/createuser" element={<CreateUser />} />
           <Route path="/users" element={<AllUser />} />
+          <Route path='/jobposting/hotvacancy' element={<Hotvacancy />} />
         </Routes>
       </div>
     </div>
