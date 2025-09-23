@@ -1,14 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // 👉 Here you can add API call for login
-    // After success, navigate to dashboard home
-    navigate("/home");
+    setError("");
+
+    try {
+      const response = await fetch("http://31.97.61.6:5000/api/admin/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: email, // API expects "username"
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // 👉 If API returns token, save it
+      if (data.token) {
+        localStorage.setItem("authToken", data.token);
+      }
+
+      // Navigate to dashboard/home
+      navigate("/home");
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -22,6 +52,10 @@ const Login = () => {
           {/* Title */}
           <h3 className="text-2xl font-semibold mb-6">Login</h3>
 
+          {error && (
+            <p className="mb-4 text-red-500 text-sm text-center">{error}</p>
+          )}
+
           <form className="space-y-4" onSubmit={handleLogin}>
             {/* Email */}
             <div>
@@ -31,6 +65,9 @@ const Login = () => {
               <input
                 type="email"
                 placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -43,6 +80,9 @@ const Login = () => {
               <input
                 type="password"
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -72,14 +112,6 @@ const Login = () => {
               Sign in
             </button>
           </form>
-
-          {/* Footer */}
-          {/* <p className="mt-4 text-sm text-gray-600 text-center">
-            Don’t have an account ?{" "}
-            <a href="/signup" className="text-purple-600 font-medium hover:underline">
-              Sign Up
-            </a>
-          </p> */}
 
           {/* Copyright */}
           <p className="text-xs text-gray-400 text-center mt-6">

@@ -2,28 +2,63 @@ import React, { useState } from "react";
 
 const EmployerRegistration = () => {
   const [formData, setFormData] = useState({
-    category: "",
-    plan: "",
     companyName: "",
     industry: "",
     companySize: "",
+    website: "",
     employerName: "",
     employerEmail: "",
     password: "",
-    razorpayOrderId: "",
-    razorpayPaymentId: "",
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setSubmitted(true); // show verification pending
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://31.97.61.6:5000/api/admin/company/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          companyData: {
+            name: formData.companyName,
+            industry: formData.industry,
+            size: formData.companySize,
+            website: formData.website,
+            contactEmail: formData.employerEmail,
+          },
+          userData: {
+            name: formData.employerName,
+            email: formData.employerEmail,
+            password: formData.password,
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      console.log("Registration success:", data);
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,30 +67,15 @@ const EmployerRegistration = () => {
         <h2 className="text-2xl font-semibold text-center mb-6">
           Employer Registration
         </h2>
+
         {!submitted ? (
           <form
             onSubmit={handleSubmit}
             className="grid grid-cols-1 md:grid-cols-3 gap-4"
           >
-            {/* Category */}
-            {/* <input
-              type="text"
-              name="category"
-              placeholder="Category"
-              value={formData.category}
-              onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
-            /> */}
-
-            {/* Plan */}
-            {/* <input
-              type="text"
-              name="plan"
-              placeholder="Plan"
-              value={formData.plan}
-              onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
-            /> */}
+            {error && (
+              <p className="col-span-3 text-center text-red-500">{error}</p>
+            )}
 
             {/* Company Name */}
             <input
@@ -64,6 +84,7 @@ const EmployerRegistration = () => {
               placeholder="Company Name"
               value={formData.companyName}
               onChange={handleChange}
+              required
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
@@ -74,6 +95,7 @@ const EmployerRegistration = () => {
               placeholder="Industry"
               value={formData.industry}
               onChange={handleChange}
+              required
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
@@ -81,10 +103,22 @@ const EmployerRegistration = () => {
             <input
               type="text"
               name="companySize"
-              placeholder="Company Size"
+              placeholder="Company Size (e.g. 11-50)"
               value={formData.companySize}
               onChange={handleChange}
+              required
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            />
+
+            {/* Website */}
+            <input
+              type="text"
+              name="website"
+              placeholder="Company Website"
+              value={formData.website}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-3"
             />
 
             {/* Employer Name */}
@@ -94,6 +128,7 @@ const EmployerRegistration = () => {
               placeholder="Employer Name"
               value={formData.employerName}
               onChange={handleChange}
+              required
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
@@ -104,6 +139,7 @@ const EmployerRegistration = () => {
               placeholder="Employer Email"
               value={formData.employerEmail}
               onChange={handleChange}
+              required
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
@@ -114,36 +150,18 @@ const EmployerRegistration = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
+              required
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
-
-            {/* Razorpay Order ID */}
-            {/* <input
-              type="text"
-              name="razorpayOrderId"
-              placeholder="Razorpay Order ID"
-              value={formData.razorpayOrderId}
-              onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
-            /> */}
-
-            {/* Razorpay Payment ID */}
-            {/* <input
-              type="text"
-              name="razorpayPaymentId"
-              placeholder="Razorpay Payment ID"
-              value={formData.razorpayPaymentId}
-              onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
-            /> */}
 
             {/* Submit button */}
             <div className="col-span-1 md:col-span-3 mt-6 text-center">
               <button
                 type="submit"
-                className="bg-blue-600 text-white font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                disabled={loading}
+                className="bg-blue-600 text-white font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
               >
-                Submit
+                {loading ? "Submitting..." : "Submit"}
               </button>
             </div>
           </form>
@@ -158,11 +176,11 @@ const EmployerRegistration = () => {
             </p>
 
             <div className="col-span-1 md:col-span-3 mt-6 text-center">
-              <a href="/"
-               
+              <a
+                href="/"
                 className="bg-blue-600 text-white font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition"
               >
-              Back to Signin
+                Back to Signin
               </a>
             </div>
           </div>
