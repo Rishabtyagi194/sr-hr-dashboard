@@ -12,13 +12,13 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch("http://31.97.61.6:5000/api/admin/signin", {
+      const response = await fetch("http://31.97.61.6:5000/api/employer/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: email, // API expects "username"
+          username: email,
           password: password,
         }),
       });
@@ -29,13 +29,13 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      // 👉 If API returns token, save it
+      // ✅ Save token & user info
       if (data.token) {
-        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user || {}));
       }
 
-      // Navigate to dashboard/home
-      navigate("/home");
+      navigate("/home"); // redirect after login
     } catch (err) {
       setError(err.message);
     }
@@ -46,18 +46,12 @@ const Login = () => {
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden flex w-full max-w-5xl">
         {/* Left Side - Form */}
         <div className="w-full md:w-1/2 p-8">
-          {/* Logo */}
           <h2 className="text-xl font-bold text-purple-600 mb-6">AUTHLOG</h2>
-
-          {/* Title */}
           <h3 className="text-2xl font-semibold mb-6">Login</h3>
 
-          {error && (
-            <p className="mb-4 text-red-500 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="mb-4 text-red-500 text-sm text-center">{error}</p>}
 
           <form className="space-y-4" onSubmit={handleLogin}>
-            {/* Email */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Your Email <span className="text-red-500">*</span>
@@ -72,7 +66,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Password <span className="text-red-500">*</span>
@@ -87,24 +80,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Remember Me + Forgot Password */}
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center">
-                <input
-                  id="remember"
-                  type="checkbox"
-                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                />
-                <label htmlFor="remember" className="ml-2 text-gray-600">
-                  Remember me
-                </label>
-              </div>
-              <a href="#" className="text-purple-600 hover:underline">
-                Forgot password ?
-              </a>
-            </div>
-
-            {/* Sign in Button */}
             <button
               type="submit"
               className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition"
@@ -112,11 +87,6 @@ const Login = () => {
               Sign in
             </button>
           </form>
-
-          {/* Copyright */}
-          <p className="text-xs text-gray-400 text-center mt-6">
-            © 2024 Authlog. Design with ❤️ by Shreethemes.
-          </p>
         </div>
 
         {/* Right Side - Image */}

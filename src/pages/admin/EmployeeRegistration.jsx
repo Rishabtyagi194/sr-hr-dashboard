@@ -6,8 +6,11 @@ const EmployerRegistration = () => {
     industry: "",
     companySize: "",
     website: "",
+    companyPhone: "",
+    companyAddress: "",
     employerName: "",
     employerEmail: "",
+    employerPhone: "",
     password: "",
   });
 
@@ -25,7 +28,7 @@ const EmployerRegistration = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://31.97.61.6:5000/api/admin/company/register", {
+      const response = await fetch("http://31.97.61.6:5000/api/company/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,12 +39,20 @@ const EmployerRegistration = () => {
             industry: formData.industry,
             size: formData.companySize,
             website: formData.website,
-            contactEmail: formData.employerEmail,
+            contact_email: formData.employerEmail,
+            contact_phone: formData.companyPhone,
+            address: formData.companyAddress,
+            verified: true,
+            status: "active",
           },
           userData: {
             name: formData.employerName,
             email: formData.employerEmail,
             password: formData.password,
+            phone: formData.employerPhone,
+            role: "employer_admin",
+            permissions: null,
+            is_active: true,
           },
         }),
       });
@@ -121,6 +132,28 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-3"
             />
 
+            {/* Company Phone */}
+            <input
+              type="text"
+              name="companyPhone"
+              placeholder="Company Phone"
+              value={formData.companyPhone}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            />
+
+            {/* Company Address */}
+            <input
+              type="text"
+              name="companyAddress"
+              placeholder="Company Address"
+              value={formData.companyAddress}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-3"
+            />
+
             {/* Employer Name */}
             <input
               type="text"
@@ -138,6 +171,17 @@ const EmployerRegistration = () => {
               name="employerEmail"
               placeholder="Employer Email"
               value={formData.employerEmail}
+              onChange={handleChange}
+              required
+              className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+            />
+
+            {/* Employer Phone */}
+            <input
+              type="text"
+              name="employerPhone"
+              placeholder="Employer Phone"
+              value={formData.employerPhone}
               onChange={handleChange}
               required
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
