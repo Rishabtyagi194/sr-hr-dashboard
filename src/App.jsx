@@ -12,6 +12,7 @@ import EditJobPage from './components/admin/JobPostingComponents/EditJobModal';
 import EmployerRegistration from './pages/admin/EmployeeRegistration';
 import { Hotvacancy } from './components/admin/JobPostingComponents/HotJob/Hotvacancy';
 import { InternshipJob } from './components/admin/JobPostingComponents/Internship/InternshipJob';
+import { SearchResume } from './components/admin/resdex/SearchResume';
 
 function Layout() {
   const location = useLocation();
@@ -37,7 +38,9 @@ function Layout() {
           <Route path="/users" element={<AllUser />} />
           <Route path='/jobposting/hotvacancy' element={<Hotvacancy />} />
           <Route path='/jobposting/internship' element={<InternshipJob />} />
+          <Route path='/resdex/resume-search' element={<SearchResume />} />
 
+          
         </Routes>
       </div>
     </div>

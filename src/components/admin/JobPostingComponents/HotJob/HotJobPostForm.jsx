@@ -155,31 +155,27 @@ const JobPostForm = () => {
     };
 
 
+    const token = localStorage.getItem("token"); // 👈 get token dynamically
+
     try {
-      const response = await fetch(
-        "http://31.97.61.6:5000/api/jobs/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbWFuQGdtYWlsLmNvbSIsInJvbGUiOiJlbXBsb3llcl9hZG1pbiIsImNvbXBhbnlfaWQiOjEsInBlcm1pc3Npb25zIjpudWxsLCJpYXQiOjE3NTk1MDYzNDEsImV4cCI6MTc2MDExMTE0MX0.htVHEwiqLYA3o2j5N21HhvTvFZCN340fVlzzzSanx94",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
+      const response = await fetch("http://31.97.61.6:5000/api/jobs/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify(payload),
+      });
+    
       const data = await response.json();
-      console.log("API response:", data);
-
-      if (response.ok) {
-        alert("Job posted successfully!");
-      } else {
-        alert(`Error: ${data.message || "Something went wrong"}`);
+    
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create job");
       }
+    
+      console.log("✅ Job created successfully:", data);
     } catch (error) {
-      console.error("Error posting job:", error);
-      alert("Failed to post job. Check console for details.");
+      console.error("❌ Error creating job:", error);
     }
   };
   return (
