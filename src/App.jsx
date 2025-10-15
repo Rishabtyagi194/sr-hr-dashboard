@@ -10,7 +10,8 @@ import { SubNavbar } from './components/admin/global/SubNavbar';
 import { Navbar } from './components/admin/global/Navbar';
 import EditJobPage from './components/admin/JobPostingComponents/EditJobModal';
 import EmployerRegistration from './pages/admin/EmployeeRegistration';
-import { Hotvacancy } from './components/admin/JobPostingComponents/Hotvacancy';
+import { Hotvacancy } from './components/admin/JobPostingComponents/HotJob/Hotvacancy';
+import { InternshipJob } from './components/admin/JobPostingComponents/Internship/InternshipJob';
 
 function Layout() {
   const location = useLocation();
@@ -35,6 +36,8 @@ function Layout() {
           <Route path="/createuser" element={<CreateUser />} />
           <Route path="/users" element={<AllUser />} />
           <Route path='/jobposting/hotvacancy' element={<Hotvacancy />} />
+          <Route path='/jobposting/internship' element={<InternshipJob />} />
+
         </Routes>
       </div>
     </div>

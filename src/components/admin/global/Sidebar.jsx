@@ -12,6 +12,8 @@ const Sidebar = () => {
     { name: "Resdex", path: "/resdex", icon: <Users size={20} /> },
     { name: "Create User", path: "/createuser", icon: <UserPlus size={20} /> },
     { name: "All Users", path: "/users", icon: <UserPlus size={20} /> },
+    { name: "My Archive", path: "/myarchive", icon: <UserPlus size={20} /> },
+
   ];
 
   return (
