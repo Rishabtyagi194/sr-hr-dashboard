@@ -35,7 +35,7 @@ export const SubNavbar = () => {
           <ul className="text-sm text-gray-700">
             <a href='/jobposting/hotvacancy' className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Hot Vacancy</a>
             <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Classified</li>
-            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Internship</li>
+            <a href='/jobposting/internship' className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Internship</a>
           </ul>
         </div>
         

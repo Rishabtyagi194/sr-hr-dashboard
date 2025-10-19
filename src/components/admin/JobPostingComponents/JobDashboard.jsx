@@ -1,66 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiRefreshCw } from "react-icons/fi";
 import { MdEdit } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-
-const initialAllJobs = [
-  {
-    id: 1,
-    title: "Urgent Hiring II Technical Retail Associate",
-    location: "Bengaluru",
-    tag: "Hot Vacancy",
-    totalResponses: 40,
-    newResponses: 4,
-    shortlisted: 0,
-    postedBy: "Me",
-    date: "26 Aug 2025",
-  },
-  {
-    id: 2,
-    title: "Urgent Hiring- Telesales Associates II Bengaluru",
-    location: "Bengaluru",
-    tag: "Invite",
-    totalResponses: 60,
-    newResponses: 7,
-    shortlisted: 0,
-    postedBy: "Me",
-    date: "26 Aug 2025",
-  },
-  {
-    id: 3,
-    title: "Urgent Hiring I Evaluation Engineer I Bengaluru",
-    location: "Bengaluru",
-    tag: "Invite",
-    totalResponses: 261,
-    newResponses: 80,
-    shortlisted: 0,
-    postedBy: "Me",
-    date: "26 Aug 2025",
-  },
-  {
-    id: 4,
-    title: "Dealer Success Manager II CARS24",
-    location: "Ahmedabad +2",
-    tag: "Invite",
-    totalResponses: 80,
-    newResponses: 57,
-    shortlisted: 2,
-    postedBy: "vikran",
-    date: "25 Aug 2025",
-  },
-  {
-    id: 5,
-    title: "Zonal Manager / Team Lead - Sales II CARS24",
-    location: "Faridabad +1",
-    tag: "Invite",
-    totalResponses: 412,
-    newResponses: 196,
-    shortlisted: 63,
-    postedBy: "vikran",
-    date: "25 Aug 2025",
-  },
-];
 
 const draftJobs = [
   {
@@ -141,12 +83,50 @@ const JobCard = ({ job }) => {
   );
 };
 
-// JobDashboard Component
+// ✅ JobDashboard Component with API integration
 const JobDashboard = () => {
   const [activeTab, setActiveTab] = useState("all");
+  const [allJobs, setAllJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Use the arrays you defined above
-  const jobsToShow = activeTab === "all" ? initialAllJobs : draftJobs;
+  // ✅ Fetch jobs from API
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await fetch("http://31.97.61.6:5000/jobs/list-all-jobs");
+        const data = await res.json();
+        // Adjust below based on actual response structure
+        if (data && Array.isArray(data.jobs)) {
+          setAllJobs(
+            data.jobs.map((job) => ({
+              id: job._id || job.id,
+              title: job.title || "Untitled Job",
+              location: job.location || "Not specified",
+              tag: job.tag || "Active",
+              totalResponses: job.totalResponses || 0,
+              newResponses: job.newResponses || 0,
+              shortlisted: job.shortlisted || 0,
+              postedBy: job.postedBy || "Unknown",
+              date: job.date
+                ? new Date(job.date).toLocaleDateString()
+                : "N/A",
+            }))
+          );
+        } else {
+          setAllJobs([]);
+        }
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+        setAllJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  const jobsToShow = activeTab === "all" ? allJobs : draftJobs;
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -160,7 +140,7 @@ const JobDashboard = () => {
               : "text-gray-500"
           }`}
         >
-          All Jobs {initialAllJobs.length}
+          All Jobs {allJobs.length}
         </button>
         <button
           onClick={() => setActiveTab("drafts")}
@@ -174,10 +154,14 @@ const JobDashboard = () => {
         </button>
       </div>
 
-      {/* Job List */}
-      {jobsToShow.map((job) => (
-        <JobCard key={job.id} job={job} />
-      ))}
+      {/* Loading / Empty / Jobs */}
+      {loading ? (
+        <p className="text-gray-500 text-center">Loading jobs...</p>
+      ) : jobsToShow.length === 0 ? (
+        <p className="text-gray-500 text-center">No jobs found.</p>
+      ) : (
+        jobsToShow.map((job) => <JobCard key={job.id} job={job} />)
+      )}
     </div>
   );
 };
