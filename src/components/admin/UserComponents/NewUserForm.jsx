@@ -11,7 +11,7 @@ export const NewUserForm = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const API_URL = "http://31.97.61.6:5000/api/employer/staff/create";
+  const API_URL = "http://147.93.72.227:5000/api/employer/staff/create";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,10 +59,10 @@ export const NewUserForm = () => {
         setPhone("");
         setAccess("User");
       } else {
-        setMessage(`❌ Error: ${data.message || "Something went wrong"}`);
+        setMessage(`Error: ${data.message || "Something went wrong"}`);
       }
     } catch (error) {
-      setMessage("❌ Network error, please try again.");
+      setMessage("Network error, please try again.");
     }
 
     setLoading(false);

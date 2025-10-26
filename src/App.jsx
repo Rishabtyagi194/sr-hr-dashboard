@@ -13,6 +13,7 @@ import EmployerRegistration from './pages/admin/EmployeeRegistration';
 import { Hotvacancy } from './components/admin/JobPostingComponents/HotJob/Hotvacancy';
 import { InternshipJob } from './components/admin/JobPostingComponents/Internship/InternshipJob';
 import { SearchResume } from './components/admin/resdex/SearchResume';
+import { MyArchive } from './components/admin/myArchive/MyArchive';
 
 function Layout() {
   const location = useLocation();
@@ -40,6 +41,7 @@ function Layout() {
           <Route path='/jobposting/internship' element={<InternshipJob />} />
           <Route path='/resdex/resume-search' element={<SearchResume />} />
 
+          <Route path='/my-archive' element={<MyArchive />} />
           
         </Routes>
       </div>

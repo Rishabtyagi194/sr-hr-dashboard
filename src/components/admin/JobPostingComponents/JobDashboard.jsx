@@ -93,7 +93,7 @@ const JobDashboard = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await fetch("http://31.97.61.6:5000/jobs/list-all-jobs");
+        const res = await fetch("http://147.93.72.227:5000/jobs/list-all-jobs");
         const data = await res.json();
         // Adjust below based on actual response structure
         if (data && Array.isArray(data.jobs)) {
