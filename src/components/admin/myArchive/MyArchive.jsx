@@ -1,7 +1,10 @@
 import React from 'react'
+import ExcelUpload from './ExcelUpload'
 
 export const MyArchive = () => {
   return (
-    <div>MyArchive</div>
+    <div>
+      <ExcelUpload />
+    </div>
   )
 }

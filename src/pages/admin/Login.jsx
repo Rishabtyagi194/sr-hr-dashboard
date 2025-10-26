@@ -46,7 +46,7 @@ const Login = () => {
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden flex w-full max-w-5xl">
         {/* Left Side - Form */}
         <div className="w-full md:w-1/2 p-8">
-          <h2 className="text-xl font-bold text-purple-600 mb-6">AUTHLOG</h2>
+          <h2 className="text-xl font-bold text-[#0078db] mb-6">AUTHLOG</h2>
           <h3 className="text-2xl font-semibold mb-6">Login</h3>
 
           {error && <p className="mb-4 text-red-500 text-sm text-center">{error}</p>}
@@ -62,7 +62,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0078db]"
               />
             </div>
 
@@ -76,13 +76,13 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0078db]"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition"
+              className="w-full bg-[#0078db] text-white py-2 rounded-lg hover:bg-[#0078db] transition"
             >
               Sign in
             </button>
