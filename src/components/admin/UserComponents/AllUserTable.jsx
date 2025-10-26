@@ -15,7 +15,7 @@ export const AllUsersTable = () => {
           return;
         }
 
-        const response = await fetch("hhttp://31.97.61.6:5000/api/employer/staff/all", {
+        const response = await fetch("http://147.93.72.227:5000/api/employer/staff/all", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

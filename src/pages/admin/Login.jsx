@@ -12,7 +12,7 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await fetch("http://31.97.61.6:5000/api/employer/login", {
+      const response = await fetch("http://147.93.72.227:5000/api/employer/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

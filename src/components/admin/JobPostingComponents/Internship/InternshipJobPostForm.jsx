@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import AddQuestionModal from "../HotJob/AddQuestionModal";
 
 const InternshipJobPostForm = () => {
-  const [jobTitle, setJobTitle] = useState("");
   const [employmentType, setEmploymentType] = useState("Full Time, Permanent");
   const [skills, setSkills] = useState([]);
   const [companyIndustry, setCompanyIndustry] = useState("Automobile - Other");
@@ -31,7 +30,7 @@ const InternshipJobPostForm = () => {
 
   // New fields
   const [workMode, setWorkMode] = useState("In office");
-  const [locations, setLocations] = useState([""]);
+  const [locations, setLocations] = useState([]);
   const [newLocation, setNewLocation] = useState("");
   const [relocate, setRelocate] = useState(false);
   const [locality, setLocality] = useState("");
@@ -111,7 +110,6 @@ const InternshipJobPostForm = () => {
     e.preventDefault();
 
     const payload = {
-      jobTitle,
       employmentType,
       workMode,
       jobLocation: locations,
@@ -127,19 +125,17 @@ const InternshipJobPostForm = () => {
 
 
     try {
-      const response = await fetch(
-        "http://31.97.61.6:5000/api/jobs/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbWFuQGdtYWlsLmNvbSIsInJvbGUiOiJlbXBsb3llcl9hZG1pbiIsImNvbXBhbnlfaWQiOjEsInBlcm1pc3Npb25zIjpudWxsLCJpYXQiOjE3NTk1MDYzNDEsImV4cCI6MTc2MDExMTE0MX0.htVHEwiqLYA3o2j5N21HhvTvFZCN340fVlzzzSanx94",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
+      const token = localStorage.getItem("token"); // replace "token" with your key
+    
+      const response = await fetch("http://147.93.72.227:5000//api/jobs/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+    
       const data = await response.json();
       console.log("API response:", data);
 
@@ -159,36 +155,10 @@ const InternshipJobPostForm = () => {
         <h2 className="text-xl font-semibold mb-6">Post a Job - Internship</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Job Title */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Job title / Designation <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Enter Job Title"
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            />
-          </div>
+      
+      
 
-          {/* Employment Type */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Employment type <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={employmentType}
-              onChange={(e) => setEmploymentType(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            >
-              <option>Full Time, Permanent</option>
-              <option>Part Time</option>
-              <option>Contract</option>
-              <option>Internship</option>
-            </select>
-          </div>
+         
 
           <div>
             <label className="block text-sm font-medium mb-2">
@@ -211,6 +181,7 @@ const InternshipJobPostForm = () => {
                 </span>
               ))}
             </div>
+
             <div className="flex gap-2">
               <input
                 type="text"
@@ -264,7 +235,7 @@ const InternshipJobPostForm = () => {
           {/* Job Location */}
           <div>
             <label className="block text-sm font-medium mb-2">
-              Job location (maximum 3) <span className="text-red-500">*</span>
+              Internship location (maximum 3) <span className="text-red-500">*</span>
             </label>
             <div className="flex flex-wrap gap-2 mb-2">
               {locations.map((loc, idx) => (

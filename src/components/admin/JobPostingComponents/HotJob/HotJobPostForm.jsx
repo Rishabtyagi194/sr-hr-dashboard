@@ -5,37 +5,35 @@ const JobPostForm = () => {
   const [jobTitle, setJobTitle] = useState("");
   const [employmentType, setEmploymentType] = useState("Full Time, Permanent");
   const [skills, setSkills] = useState([]);
-  const [companyIndustry, setCompanyIndustry] = useState("Automobile - Other");
+  const [companyIndustry, setCompanyIndustry] = useState("");
   const [roleCategory, setRoleCategory] = useState("Other");
 
-    // Walk-in states
-    const [includeWalkin, setIncludeWalkin] = useState(false);
-    const [walkinDate, setWalkinDate] = useState("");
-    const [walkinDuration, setWalkinDuration] = useState(1);
-    const [walkinTime, setWalkinTime] = useState("9.30 AM - 5.30 PM");
-    const [contactPerson, setContactPerson] = useState("");
-    const [contactNumber, setContactNumber] = useState("");
-    const [venue, setVenue] = useState("");
-    const [googleMapsUrl, setGoogleMapsUrl] = useState("");
-    const [questions, setQuestions] = useState([]);
+  const [includeWalkin, setIncludeWalkin] = useState(false);
+  const [walkinDate, setWalkinDate] = useState("");
+  const [walkinDuration, setWalkinDuration] = useState(1);
+  const [walkinTime, setWalkinTime] = useState("");
+  const [contactPerson, setContactPerson] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [venue, setVenue] = useState("");
+  const [googleMapsUrl, setGoogleMapsUrl] = useState("");
+  const [questions, setQuestions] = useState([]);
 
-    const formatTime = (time) => {
-      if (!time) return "";
-      let [hour, minute] = time.split(":");
-      hour = parseInt(hour);
-      const ampm = hour >= 12 ? "PM" : "AM";
-      hour = hour % 12 || 12;
-      return `${hour}:${minute} ${ampm}`;
-    };
-  
+  const formatTime = (time) => {
+    if (!time) return "";
+    let [hour, minute] = time.split(":");
+    hour = parseInt(hour);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+    return `${hour}:${minute} ${ampm}`;
+  };
 
-  // New fields
   const [workMode, setWorkMode] = useState("In office");
-  const [locations, setLocations] = useState([""]);
+  const [locations, setLocations] = useState([]);
   const [newLocation, setNewLocation] = useState("");
   const [relocate, setRelocate] = useState(false);
   const [locality, setLocality] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [aboutcompany, setaboutcompany] = useState("");
 
   const [expFrom, setExpFrom] = useState(1);
   const [expTo, setExpTo] = useState(6);
@@ -44,10 +42,25 @@ const JobPostForm = () => {
   const [salaryTo, setSalaryTo] = useState("");
   const [hideSalary, setHideSalary] = useState(false);
 
-  const [education, setEducation] = useState([
- 
-  ]);
+  const [education, setEducation] = useState([]);
   const [newEducation, setNewEducation] = useState("");
+
+
+
+  const [keyskills, setkeyskills] = useState([]); // initialize as array
+const [newkeyskills, setNewkeyskills] = useState(""); // initialize as string
+
+// Handler
+const handleAddKeySkills = () => {
+  if (newkeyskills && !keyskills.includes(newkeyskills)) {
+    setkeyskills([...keyskills, newkeyskills]);
+    setNewkeyskills("");
+  }
+};
+
+const handleRemoveKeySkill = (skill) => {
+  setkeyskills(keyskills.filter((s) => s !== skill));
+};
 
   // Handlers
   const handleAddSkill = (e) => {
@@ -57,9 +70,6 @@ const JobPostForm = () => {
       e.target.value = "";
     }
   };
-
-  const handleRemoveSkill = (skill) =>
-    setSkills(skills.filter((s) => s !== skill));
 
   const handleAddLocation = () => {
     if (newLocation && locations.length < 3) {
@@ -106,39 +116,8 @@ const JobPostForm = () => {
     setIsModalOpen(false); // close modal
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log({
-  //     jobTitle,
-  //     employmentType,
-  //     skills,
-  //     companyIndustry,
-  //     roleCategory,
-  //     workMode,
-  //     locations,
-  //     relocate,
-  //     locality,
-  //     expFrom,
-  //     expTo,
-  //     salaryFrom,
-  //     salaryTo,
-  //     hideSalary,
-  //     education,
-  //     includeWalkin,
-  //     walkinDate,
-  //     walkinDuration,
-  //     walkinTime,
-  //     contactPerson,
-  //     contactNumber,
-  //     venue,
-  //     googleMapsUrl,
-  //     questions,
-  //   });
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const payload = {
       jobTitle,
       employmentType,
@@ -147,18 +126,17 @@ const JobPostForm = () => {
       locality,
       experinceFrom: expFrom,
       experinceTo: expTo,
-      salaryRangeFrom: salaryFrom.replace(/\D/g, ""), // remove text like "lacs"
+      salaryRangeFrom: salaryFrom.replace(/\D/g, ""), 
       salaryRangeTo: salaryTo.replace(/\D/g, ""),
       qualification: education,
       jobDescription,
-      questions, // added candidate questions
+      questions,
     };
 
-
-    const token = localStorage.getItem("token"); // 👈 get token dynamically
+    const token = localStorage.getItem("token"); 
 
     try {
-      const response = await fetch("http://31.97.61.6:5000/api/jobs/create", {
+      const response = await fetch("http://147.93.72.227:5000/api/jobs/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -166,16 +144,16 @@ const JobPostForm = () => {
         },
         body: JSON.stringify(payload),
       });
-    
+
       const data = await response.json();
-    
+
       if (!response.ok) {
         throw new Error(data.message || "Failed to create job");
       }
-    
+
       console.log("✅ Job created successfully:", data);
     } catch (error) {
-      console.error("❌ Error creating job:", error);
+      console.error("Error creating job:", error);
     }
   };
   return (
@@ -216,43 +194,43 @@ const JobPostForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
-            Key skills  <span className="text-red-500">*</span>
-            </label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {education.map((edu, idx) => (
-                <span
-                  key={idx}
-                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
-                >
-                  {edu}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveEducation(edu)}
-                    className="text-red-500"
-                  >
-                    ✕
-                  </button>
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add skills that are crucial for the job"
-                value={newEducation}
-                onChange={(e) => setNewEducation(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
-              />
-              <button
-                type="button"
-                onClick={handleAddEducation}
-                className="bg-blue-600 text-white px-4 rounded-lg"
-              >
-                Add
-              </button>
-            </div>
-          </div>
+  <label className="block text-sm font-medium mb-2">
+    Key skills <span className="text-red-500">*</span>
+  </label>
+  <div className="flex flex-wrap gap-2 mb-2">
+    {keyskills.map((skill, idx) => (
+      <span
+        key={idx}
+        className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
+      >
+        {skill}
+        <button
+          type="button"
+          onClick={() => handleRemoveKeySkill(skill)}
+          className="text-red-500"
+        >
+          ✕
+        </button>
+      </span>
+    ))}
+  </div>
+  <div className="flex gap-2">
+    <input
+      type="text"
+      placeholder="Add skills that are crucial for the job"
+      value={newkeyskills}
+      onChange={(e) => setNewkeyskills(e.target.value)}
+      className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
+    />
+    <button
+      type="button"
+      onClick={handleAddKeySkills}
+      className="bg-blue-600 text-white px-4 rounded-lg"
+    >
+      Add
+    </button>
+  </div>
+</div>
 
           <div>
             <label className="block text-sm font-medium mb-2">
@@ -361,6 +339,7 @@ const JobPostForm = () => {
                 onChange={(e) => setExpFrom(e.target.value)}
                 className="w-1/2 border border-gray-300 rounded-lg px-3 py-2"
               />
+              to
               <input
                 type="number"
                 min="0"
@@ -377,24 +356,19 @@ const JobPostForm = () => {
               Annual salary range <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2">
-              <select
+              <input
+                type="number"
                 value={salaryFrom}
                 onChange={(e) => setSalaryFrom(e.target.value)}
                 className="w-1/2 border border-gray-300 rounded-lg px-3 py-2"
-              >
-                <option>3 lacs</option>
-                <option>4 lacs</option>
-                <option>5 lacs</option>
-              </select>
-              <select
+              ></input>
+              to
+              <input
+                type="number"
                 value={salaryTo}
                 onChange={(e) => setSalaryTo(e.target.value)}
                 className="w-1/2 border border-gray-300 rounded-lg px-3 py-2"
-              >
-                <option>4 lacs</option>
-                <option>5 lacs</option>
-                <option>6 lacs</option>
-              </select>
+              ></input>
             </div>
             <label className="flex items-center gap-2 mt-2">
               <input
@@ -448,39 +422,38 @@ const JobPostForm = () => {
             </div>
           </div>
           <div>
-  <label className="block text-sm font-medium mb-2">
-    Job Description <span className="text-red-500">*</span>
-  </label>
-  <textarea
-    placeholder="Enter detailed job description"
-    value={jobDescription}
-    onChange={(e) => setJobDescription(e.target.value)}
-    className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none overflow-hidden"
-    rows={4}
-    onInput={(e) => {
-      e.target.style.height = "auto";
-      e.target.style.height = e.target.scrollHeight + "px";
-    }}
-  />
-</div>
+            <label className="block text-sm font-medium mb-2">
+              Job Description <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              placeholder="Enter detailed job description"
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none overflow-hidden"
+              rows={4}
+              onInput={(e) => {
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
+            />
+          </div>
 
-<div>
-  <label className="block text-sm font-medium mb-2">
-   About Company<span className="text-red-500">*</span>
-  </label>
-  <textarea
-    placeholder="Enter detailed company details"
-    value={jobDescription}
-    onChange={(e) => setJobDescription(e.target.value)}
-    className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none overflow-hidden"
-    rows={4}
-    onInput={(e) => {
-      e.target.style.height = "auto";
-      e.target.style.height = e.target.scrollHeight + "px";
-    }}
-  />
-</div>
-
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              About Company<span className="text-red-500">*</span>
+            </label>
+            <textarea
+              placeholder="Enter detailed company details"
+              value={aboutcompany}
+              onChange={(e) => setaboutcompany(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none overflow-hidden"
+              rows={4}
+              onInput={(e) => {
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
+            />
+          </div>
 
           {/* Walk-in Section */}
           <div className="pt-4 border-t border-gray-200">
@@ -499,7 +472,9 @@ const JobPostForm = () => {
               <div className="grid grid-cols-2 gap-4 mt-4">
                 {/* Walk-in Date */}
                 <div>
-                  <label className="block text-sm mb-1">Walk-in start date *</label>
+                  <label className="block text-sm mb-1">
+                    Walk-in start date *
+                  </label>
                   <input
                     type="date"
                     value={walkinDate}
@@ -521,36 +496,37 @@ const JobPostForm = () => {
                 </div>
 
                 {/* Timing */}
-            {/* Walk-in Timing */}
-<div className="col-span-2">
-  <label className="block text-sm mb-1">Walk-in timing</label>
-  <div className="flex items-center gap-2">
-    <input
-      type="time"
-      value={walkinTime.start}
-      onChange={(e) =>
-        setWalkinTime({ ...walkinTime, start: e.target.value })
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2"
-    />
-    <span className="text-gray-600">to</span>
-    <input
-      type="time"
-      value={walkinTime.end}
-      onChange={(e) =>
-        setWalkinTime({ ...walkinTime, end: e.target.value })
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2"
-    />
-  </div>
-  <p className="text-xs text-gray-500 mt-1">
-    Selected:{" "}
-    {walkinTime.start && walkinTime.end
-      ? `${formatTime(walkinTime.start)} - ${formatTime(walkinTime.end)}`
-      : "Select time range"}
-  </p>
-</div>
-
+                {/* Walk-in Timing */}
+                <div className="col-span-2">
+                  <label className="block text-sm mb-1">Walk-in timing</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="time"
+                      value={walkinTime.start}
+                      onChange={(e) =>
+                        setWalkinTime({ ...walkinTime, start: e.target.value })
+                      }
+                      className="border border-gray-300 rounded-lg px-3 py-2"
+                    />
+                    <span className="text-gray-600">to</span>
+                    <input
+                      type="time"
+                      value={walkinTime.end}
+                      onChange={(e) =>
+                        setWalkinTime({ ...walkinTime, end: e.target.value })
+                      }
+                      className="border border-gray-300 rounded-lg px-3 py-2"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Selected:{" "}
+                    {walkinTime.start && walkinTime.end
+                      ? `${formatTime(walkinTime.start)} - ${formatTime(
+                          walkinTime.end
+                        )}`
+                      : "Select time range"}
+                  </p>
+                </div>
 
                 {/* Contact Person */}
                 <div>
@@ -601,15 +577,15 @@ const JobPostForm = () => {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   />
                 </div>
-
-            
               </div>
             )}
           </div>
 
-              {/* Questions */}
-              <div className="col-span-2">
-            <label className="block text-sm mb-2">Questions for candidates</label>
+          {/* Questions */}
+          <div className="col-span-2">
+            <label className="block text-sm mb-2">
+              Questions for candidates
+            </label>
             {questions.map((q, idx) => (
               <input
                 key={idx}
@@ -629,7 +605,6 @@ const JobPostForm = () => {
             </button>
           </div>
 
-
           {/* Submit */}
           <div className="text-center pt-4">
             <button
@@ -641,8 +616,9 @@ const JobPostForm = () => {
           </div>
         </form>
       </div>
-      {isModalOpen && <AddQuestionModal onClose={() => setIsModalOpen(false)} />}
-
+      {isModalOpen && (
+        <AddQuestionModal onClose={() => setIsModalOpen(false)} />
+      )}
     </div>
   );
 };
