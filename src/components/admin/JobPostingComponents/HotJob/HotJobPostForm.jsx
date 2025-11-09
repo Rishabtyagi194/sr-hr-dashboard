@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AddQuestionModal from "./AddQuestionModal";
 
-const JobPostForm = () => {
+const JobPostForm = ({}) => {
   const [jobTitle, setJobTitle] = useState("");
   const [employmentType, setEmploymentType] = useState("Full Time, Permanent");
   const [skills, setSkills] = useState([]);
@@ -45,22 +45,20 @@ const JobPostForm = () => {
   const [education, setEducation] = useState([]);
   const [newEducation, setNewEducation] = useState("");
 
-
-
   const [keyskills, setkeyskills] = useState([]); // initialize as array
-const [newkeyskills, setNewkeyskills] = useState(""); // initialize as string
+  const [newkeyskills, setNewkeyskills] = useState(""); // initialize as string
 
-// Handler
-const handleAddKeySkills = () => {
-  if (newkeyskills && !keyskills.includes(newkeyskills)) {
-    setkeyskills([...keyskills, newkeyskills]);
-    setNewkeyskills("");
-  }
-};
+  // Handler
+  const handleAddKeySkills = () => {
+    if (newkeyskills && !keyskills.includes(newkeyskills)) {
+      setkeyskills([...keyskills, newkeyskills]);
+      setNewkeyskills("");
+    }
+  };
 
-const handleRemoveKeySkill = (skill) => {
-  setkeyskills(keyskills.filter((s) => s !== skill));
-};
+  const handleRemoveKeySkill = (skill) => {
+    setkeyskills(keyskills.filter((s) => s !== skill));
+  };
 
   // Handlers
   const handleAddSkill = (e) => {
@@ -116,25 +114,86 @@ const handleRemoveKeySkill = (skill) => {
     setIsModalOpen(false); // close modal
   };
 
-  const handleSubmit = async (e) => {
+  const handleDeleteJob = async (jobId) => {
+  if (!jobId) {
+    alert("Job ID not found!");
+    return;
+  }
+
+  if (!window.confirm("Are you sure you want to delete this job?")) return;
+
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await fetch(
+      `http://147.93.72.227:5000/api/jobs/delete/${jobId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    );
+
+    const data = await response.json();
+    console.log("Delete Response:", data);
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete job");
+    }
+
+    alert("Job deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    alert("Error deleting job: " + error.message);
+  }
+};
+
+
+  const handleSubmit = async (e, status) => {
     e.preventDefault();
+  
     const payload = {
       jobTitle,
       employmentType,
+      skills: keyskills,
+      CompanyIndustry: companyIndustry || "Information Technology",
       workMode,
-      jobLocation: locations,
+      jobLocation: {
+        city: locations[0] || "Mumbai",
+        state: "Maharashtra",
+        country: "India",
+      },
+      willingToRelocate: relocate,
       locality,
-      experinceFrom: expFrom,
-      experinceTo: expTo,
-      salaryRangeFrom: salaryFrom.replace(/\D/g, ""), 
-      salaryRangeTo: salaryTo.replace(/\D/g, ""),
+      experinceFrom: expFrom.toString(),
+      experinceTo: expTo.toString(),
+      salaryRangeFrom: salaryFrom.toString(),
+      salaryRangeTo: salaryTo.toString(),
       qualification: education,
       jobDescription,
-      questions,
+      AboutCompany: aboutcompany,
+      include_walk_in_details: includeWalkin,
+      walk_in_start_date: includeWalkin ? walkinDate : null,
+      walk_in_start_time: includeWalkin ? walkinTime?.start || "2/10/2002" : "",
+      walk_in_end_time: includeWalkin ? walkinTime?.end || "" : "",
+      contact_person: includeWalkin ? contactPerson : "",
+      venue: includeWalkin ? venue : "",
+      google_maps_url: includeWalkin ? googleMapsUrl : "",
+      duration_days: includeWalkin ? Number(walkinDuration) : 0,
+      contact_number: includeWalkin ? contactNumber : "",
+      questions: questions.map((q) => ({
+        question: q.question || q,
+        type: q.type || "short_answer",
+        mandatory: q.mandatory || false,
+        options: q.options || [],
+        validation: q.validation || "",
+      })),
+      Status: status,
     };
-
-    const token = localStorage.getItem("token"); 
-
+  
+    const token = localStorage.getItem("token");
+  
     try {
       const response = await fetch("http://147.93.72.227:5000/api/jobs/create", {
         method: "POST",
@@ -144,18 +203,22 @@ const handleRemoveKeySkill = (skill) => {
         },
         body: JSON.stringify(payload),
       });
-
+  
       const data = await response.json();
-
+      console.log("Response:", data);
+  
       if (!response.ok) {
         throw new Error(data.message || "Failed to create job");
       }
-
-      console.log("✅ Job created successfully:", data);
+  
+      alert(status === "draft" ? "Job saved as draft!" : "Job posted successfully!");
     } catch (error) {
       console.error("Error creating job:", error);
+      alert("Error creating job: " + error.message);
     }
   };
+  
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
@@ -194,51 +257,51 @@ const handleRemoveKeySkill = (skill) => {
           </div>
 
           <div>
-  <label className="block text-sm font-medium mb-2">
-    Key skills <span className="text-red-500">*</span>
-  </label>
-  <div className="flex flex-wrap gap-2 mb-2">
-    {keyskills.map((skill, idx) => (
-      <span
-        key={idx}
-        className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
-      >
-        {skill}
-        <button
-          type="button"
-          onClick={() => handleRemoveKeySkill(skill)}
-          className="text-red-500"
-        >
-          ✕
-        </button>
-      </span>
-    ))}
-  </div>
-  <div className="flex gap-2">
-    <input
-      type="text"
-      placeholder="Add skills that are crucial for the job"
-      value={newkeyskills}
-      onChange={(e) => setNewkeyskills(e.target.value)}
-      className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
-    />
-    <button
-      type="button"
-      onClick={handleAddKeySkills}
-      className="bg-blue-600 text-white px-4 rounded-lg"
-    >
-      Add
-    </button>
-  </div>
-</div>
+            <label className="block text-sm font-medium mb-2">
+              Key skills <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {keyskills.map((skill, idx) => (
+                <span
+                  key={idx}
+                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
+                >
+                  {skill}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveKeySkill(skill)}
+                    className="text-red-500"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Add skills that are crucial for the job"
+                value={newkeyskills}
+                onChange={(e) => setNewkeyskills(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
+              />
+              <button
+                type="button"
+                onClick={handleAddKeySkills}
+                className="bg-blue-600 text-white px-4 rounded-lg"
+              >
+                Add
+              </button>
+            </div>
+          </div>
 
           <div>
             <label className="block text-sm font-medium mb-2">
               Company industry <span className="text-red-500">*</span>
             </label>
             <select
-              value={employmentType}
-              onChange={(e) => setEmploymentType(e.target.value)}
+              value={companyIndustry}
+              onChange={(e) => setCompanyIndustry(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2"
             >
               <option>Others</option>
@@ -606,13 +669,24 @@ const handleRemoveKeySkill = (skill) => {
           </div>
 
           {/* Submit */}
-          <div className="text-center pt-4">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-            >
-              Post Job
-            </button>
+          <div className="flex gap-3 text-center pt-4">
+            <div className="flex gap-3 text-center pt-4">
+              <button
+                type="button"
+                onClick={(e) => handleSubmit(e, "draft")}
+                className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition"
+              >
+                Save as Draft
+              </button>
+
+              <button
+                type="button"
+                onClick={(e) => handleSubmit(e, "active")}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Post Job
+              </button>
+            </div>
           </div>
         </form>
       </div>

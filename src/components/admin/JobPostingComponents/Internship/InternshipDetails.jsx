@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const InternshipDetails = () => {
+ const InternshipDetails = ({ setDetails }) => {
   const [jobTitle, setJobTitle] = useState("");
   const [employmentType, setEmploymentType] = useState("Full Time, Permanent");
   const [internshipDuration, setInternshipDuration] = useState("");
@@ -15,6 +15,25 @@ export const InternshipDetails = () => {
   const [perks, setPerks] = useState([]);
   const [customPerk, setCustomPerk] = useState("");
   const [vacancies, setVacancies] = useState(1);
+
+
+  useEffect(() => {
+    setDetails({
+      jobTitle,
+      employmentType,
+      internshipDuration,
+      internshipDate,
+      offeredStipend,
+      currency,
+      workMode,
+      location,
+      relocate,
+      industry,
+      perks,
+      vacancies,
+    });
+  }, [jobTitle, employmentType, internshipDuration, internshipDate, offeredStipend, currency, workMode, location, relocate, industry, perks, vacancies]);
+  
 
   const suggestedPerks = [
     "Certificate",
@@ -282,3 +301,5 @@ export const InternshipDetails = () => {
     </div>
   );
 };
+
+export default InternshipDetails;

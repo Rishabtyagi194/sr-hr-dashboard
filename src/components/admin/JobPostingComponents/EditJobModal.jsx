@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 // Mock jobs (you can fetch from API instead)
-const jobs = [
-  { id: 1, title: "Urgent Hiring II Technical Retail Associate", location: "Bengaluru", tag: "Hot Vacancy", postedBy: "Me", date: "26 Aug 2025" },
-  { id: 2, title: "Urgent Hiring- Telesales Associates II Bengaluru", location: "Bengaluru", tag: "Invite", postedBy: "Me", date: "26 Aug 2025" },
-];
+// const jobs = [
+//   { id: 1, title: "Urgent Hiring II Technical Retail Associate", location: "Bengaluru", tag: "Hot Vacancy", postedBy: "Me", date: "26 Aug 2025" },
+//   { id: 2, title: "Urgent Hiring- Telesales Associates II Bengaluru", location: "Bengaluru", tag: "Invite", postedBy: "Me", date: "26 Aug 2025" },
+// ];
 
 const EditJobPage = () => {
   const { id } = useParams();

@@ -1,4 +1,4 @@
-import './App.css'
+import './App.css';
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from './pages/admin/Home';
 import Sidebar from './components/admin/global/Sidebar';
@@ -11,14 +11,14 @@ import { Navbar } from './components/admin/global/Navbar';
 import EditJobPage from './components/admin/JobPostingComponents/EditJobModal';
 import EmployerRegistration from './pages/admin/EmployeeRegistration';
 import { Hotvacancy } from './components/admin/JobPostingComponents/HotJob/Hotvacancy';
-import { InternshipJob } from './components/admin/JobPostingComponents/Internship/InternshipJob';
 import { SearchResume } from './components/admin/resdex/SearchResume';
 import { MyArchive } from './components/admin/myArchive/MyArchive';
+import ProtectedRoute from './components/admin/global/ProtectedRoute';
+import InternshipJob from './components/admin/JobPostingComponents/Internship/InternshipJob';
 
 function Layout() {
   const location = useLocation();
 
-  // Hide sidebar on login and employer registration pages
   const hideSidebar =
     location.pathname === "/" || location.pathname === "/employeeresgistration";
 
@@ -28,21 +28,23 @@ function Layout() {
 
       <div className={`flex-1 ${!hideSidebar ? "ml-64" : ""} bg-gray-100 min-h-screen`}>
         {!hideSidebar && <Navbar />}
+
         <Routes>
+          {/* Public routes */}
           <Route path="/" element={<Login />} />
           <Route path="/employeeresgistration" element={<EmployerRegistration />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/jobposting" element={<JobPosting />} />
-          <Route path="/jobposting/jobs/:id" element={<EditJobPage />} />
-          <Route path="/resdex" element={<SubNavbar />} />
-          <Route path="/createuser" element={<CreateUser />} />
-          <Route path="/users" element={<AllUser />} />
-          <Route path='/jobposting/hotvacancy' element={<Hotvacancy />} />
-          <Route path='/jobposting/internship' element={<InternshipJob />} />
-          <Route path='/resdex/resume-search' element={<SearchResume />} />
 
-          <Route path='/my-archive' element={<MyArchive />} />
-          
+          {/* Protected routes */}
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/jobposting" element={<ProtectedRoute><JobPosting /></ProtectedRoute>} />
+          <Route path="/jobposting/jobs/:id" element={<ProtectedRoute><EditJobPage /></ProtectedRoute>} />
+          <Route path="/resdex" element={<ProtectedRoute><SubNavbar /></ProtectedRoute>} />
+          <Route path="/createuser" element={<ProtectedRoute><CreateUser /></ProtectedRoute>} />
+          <Route path="/users" element={<ProtectedRoute><AllUser /></ProtectedRoute>} />
+          <Route path="/jobposting/hotvacancy" element={<ProtectedRoute><Hotvacancy /></ProtectedRoute>} />
+          <Route path="/jobposting/internship" element={<ProtectedRoute><InternshipJob /></ProtectedRoute>} />
+          <Route path="/resdex/resume-search" element={<ProtectedRoute><SearchResume /></ProtectedRoute>} />
+          <Route path="/my-archive" element={<ProtectedRoute><MyArchive /></ProtectedRoute>} />
         </Routes>
       </div>
     </div>

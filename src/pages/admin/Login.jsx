@@ -49,7 +49,9 @@ const Login = () => {
           <h2 className="text-xl font-bold text-[#0078db] mb-6">AUTHLOG</h2>
           <h3 className="text-2xl font-semibold mb-6">Login</h3>
 
-          {error && <p className="mb-4 text-red-500 text-sm text-center">{error}</p>}
+          {error && (
+            <p className="mb-4 text-red-500 text-sm text-center">{error}</p>
+          )}
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
@@ -82,7 +84,7 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full bg-[#0078db] text-white py-2 rounded-lg hover:bg-[#0078db] transition"
+              className="w-full bg-[#0078db] text-white py-2 rounded-lg hover:bg-[#005fa8] transition"
             >
               Sign in
             </button>

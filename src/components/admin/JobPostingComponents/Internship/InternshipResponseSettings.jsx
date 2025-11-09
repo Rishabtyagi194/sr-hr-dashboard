@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, UserPlus, Mail, ChevronDown } from "lucide-react";
 
-const JobResponseSettings = () => {
+const JobResponseSettings = ({ setResponseSettings, onPost }) => {
   const [date, setDate] = useState("");
   const [referenceCode, setReferenceCode] = useState("");
   const [showSummaryDropdown, setShowSummaryDropdown] = useState(false);
+
+  useEffect(() => {
+    setResponseSettings({ date, referenceCode });
+  }, [date, referenceCode]);
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-lg p-6 space-y-6">
@@ -33,12 +37,8 @@ const JobResponseSettings = () => {
         </p>
         <div className="mt-3 border border-gray-300 rounded-lg p-3 space-y-2">
           <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded-md w-fit">
-            <div className="w-8 h-8 bg-green-100 text-green-700 font-semibold flex items-center justify-center rounded-full">
-              NE
-            </div>
-            <p className="text-sm text-gray-700">
-              neha.bhandari@cars24.com
-            </p>
+         
+       
           </div>
           <button className="flex items-center text-blue-600 text-sm font-medium hover:underline">
             <UserPlus className="w-4 h-4 mr-1" /> Add members
@@ -46,7 +46,7 @@ const JobResponseSettings = () => {
         </div>
       </div>
 
-      {/* Receive responses over email */}
+      {/* Receive responses */}
       <div>
         <div className="flex items-center justify-between">
           <p className="text-gray-800 font-medium">Receive responses over email</p>
@@ -65,11 +65,8 @@ const JobResponseSettings = () => {
               As a daily summary
             </button>
             <button className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-50">
-           On every new response
+              On every new response
             </button>
-            {/* <button className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-50">
-              Weekly summary
-            </button> */}
           </div>
         )}
 
@@ -86,7 +83,7 @@ const JobResponseSettings = () => {
         </div>
       </div>
 
-      {/* Reference code */}
+      {/* Reference Code */}
       <div>
         <label className="text-gray-800 font-medium">
           Add reference code to distinctly identify this internship{" "}
@@ -101,18 +98,20 @@ const JobResponseSettings = () => {
         />
       </div>
 
-      <div className="mt-6  flex gap-2">
-      <button
-          onClick={() => console.log(description)}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg"
-        >
-      Save as Preview
-        </button>
+      {/* Action Buttons */}
+      <div className="mt-6 flex gap-2">
         <button
-          onClick={() => console.log(description)}
+          onClick={() => onPost("draft")}
+          className="border border-blue-600 text-blue-600 px-6 py-2 rounded-lg hover:bg-blue-50"
+        >
+          Save as Preview
+        </button>
+
+        <button
+          onClick={() => onPost("active")}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg"
         >
-         Post an internship
+          Post an internship
         </button>
       </div>
     </div>

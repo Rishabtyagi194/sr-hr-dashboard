@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const PereferedCandidate = () => {
+const PereferedCandidate = ({ setCandidate }) => {
   const [skills, setSkills] = useState([
     "Human Resource Management",
     "Attendance Management",
@@ -11,10 +11,15 @@ const PereferedCandidate = () => {
   ]);
   const [inputSkill, setInputSkill] = useState("");
   const [education, setEducation] = useState([
-    "B.B.A/ B.M.S - Human Resource Management",
-    "B.B.A/ B.M.S - Human Resources",
+    "MCA",
+    "BCA",
   ]);
   const [videoProfile, setVideoProfile] = useState("No");
+
+  useEffect(() => {
+    setCandidate({ skills, education, videoProfile });
+  }, [skills, education, videoProfile]);
+  
 
   const suggestions = [
     "Succession Planning",
