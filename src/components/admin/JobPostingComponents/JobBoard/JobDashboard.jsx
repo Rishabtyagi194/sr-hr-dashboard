@@ -18,7 +18,7 @@ const JobCard = ({ job, onDelete }) => {
         <input type="checkbox" className="mt-2" />
         <div>
           <h2 className="font-semibold text-gray-800">
-            {job?.title || job?.jobTitle}
+            {job?.jobTitle || "NA"}
           </h2>
           <p className="text-sm text-gray-500">{job?.location}</p>
 
@@ -83,64 +83,80 @@ const JobDashboard = () => {
 
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch JOBS
-  const fetchJobs = async () => {
-    try {
-      const res = await fetch("http://147.93.72.227:5000/api/jobs/employer-jobs");
-      const data = await res.json();
+  
 
-      if (data?.AllJobs && Array.isArray(data.AllJobs)) {
-        const active = data.AllJobs.filter((job) => job.Status === "active");
-        const drafts = data.AllJobs.filter(
-          (job) => job.Status === "draft" || job.Status === "inactive"
-        );
+// ✅ Fetch JOBS
+const fetchJobs = async () => {
+  try {
+    const token = localStorage.getItem("token");
 
-        setAllJobs(active);
-        setDraftJobs(drafts);
-      } else {
-        setAllJobs([]);
-        setDraftJobs([]);
+    const res = await fetch(
+      "http://147.93.72.227:5000/api/jobs/employer-jobs",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-    }
-  };
+    );
 
-  // ✅ Fetch INTERNSHIPS
-  const fetchInternships = async () => {
-    try {
-      const token = localStorage.getItem("refreshToken");
+    const data = await res.json();
+    console.log("Jobs data: ", data);
 
-      const res = await fetch(
-        "http://147.93.72.227:5000/api/internship/all-internships",
-        {
-          method: "GET",
-          headers: {
-            Cookie: `refreshToken=${token}`,
-          },
-          credentials: "include",
-        }
+    if (data?.AllJobs && Array.isArray(data.AllJobs)) {
+      const active = data.AllJobs.filter((job) => job.Status === "active");
+      const drafts = data.AllJobs.filter(
+        (job) => job.Status === "draft" || job.Status === "inactive"
       );
 
-      const data = await res.json();
-      console.log("Internship data: ", data);
-
-      if (data?.data && Array.isArray(data.data)) {
-        const active = data.data.filter((job) => job.Status === "active");
-        const drafts = data.data.filter(
-          (job) => job.Status === "draft" || job.Status === "inactive"
-        );
-
-        setInternshipsActive(active);
-        setInternshipsDraft(drafts);
-      } else {
-        setInternshipsActive([]);
-        setInternshipsDraft([]);
-      }
-    } catch (error) {
-      console.error("Error fetching internships:", error);
+      setAllJobs(active);
+      setDraftJobs(drafts);
+    } else {
+      setAllJobs([]);
+      setDraftJobs([]);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+  }
+};
+
+
+
+// ✅ Fetch INTERNSHIPS
+const fetchInternships = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(
+      "http://147.93.72.227:5000/api/internship/all-internships",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await res.json();
+    console.log("Internship data: ", data);
+
+    if (data?.data && Array.isArray(data.data)) {
+      const active = data.data.filter((job) => job.Status === "active");
+      const drafts = data.data.filter(
+        (job) => job.Status === "draft" || job.Status === "inactive"
+      );
+
+      setInternshipsActive(active);
+      setInternshipsDraft(drafts);
+    } else {
+      setInternshipsActive([]);
+      setInternshipsDraft([]);
+    }
+  } catch (error) {
+    console.error("Error fetching internships:", error);
+  }
+};
+
 
   useEffect(() => {
     const load = async () => {

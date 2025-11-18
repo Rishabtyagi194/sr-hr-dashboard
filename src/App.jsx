@@ -8,7 +8,7 @@ import { CreateUser } from './pages/admin/CreateUser';
 import { AllUser } from './pages/admin/AllUser';
 import { SubNavbar } from './components/admin/global/SubNavbar';
 import { Navbar } from './components/admin/global/Navbar';
-import EditJobPage from './components/admin/JobPostingComponents/EditJobModal';
+import EditJobPage from './components/admin/JobPostingComponents/JobBoard/EditJobModal';
 import EmployerRegistration from './pages/admin/EmployeeRegistration';
 import { Hotvacancy } from './components/admin/JobPostingComponents/HotJob/Hotvacancy';
 import { SearchResume } from './components/admin/resdex/SearchResume';

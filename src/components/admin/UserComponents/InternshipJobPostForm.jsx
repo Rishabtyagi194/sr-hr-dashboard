@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddQuestionModal from "../HotJob/AddQuestionModal";
+import AddQuestionModal from "../JobPostingComponents/HotJob/AddQuestionModal";
 
 const InternshipJobPostForm = () => {
   const [employmentType, setEmploymentType] = useState("Full Time, Permanent");
@@ -104,7 +104,7 @@ const InternshipJobPostForm = () => {
     setIsModalOpen(false); // close modal
   };
 
-  const handleSubmit = async (jobStatus, e) => {
+  const handleSubmit = async (status, e) => {
     if (e) e.preventDefault();
 
     const payload = {
@@ -119,7 +119,7 @@ const InternshipJobPostForm = () => {
       qualification: education,
       jobDescription,
       questions,
-      status: jobStatus, // ✅ added status
+      status: status, // ✅ added status
     };
 
     try {
@@ -142,7 +142,7 @@ const InternshipJobPostForm = () => {
 
       if (response.ok) {
         alert(
-          jobStatus === "active"
+          status === "active"
             ? "Job posted successfully!"
             : "Saved as draft successfully!"
         );

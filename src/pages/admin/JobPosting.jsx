@@ -1,5 +1,5 @@
 import React from 'react'
-import { AllJobs } from '../../components/admin/JobPostingComponents/AllJobs'
+import { AllJobs } from '../../components/admin/JobPostingComponents/JobBoard/AllJobs'
 import { SubNavbar } from '../../components/admin/global/SubNavbar'
 
 export const JobPosting = () => {

@@ -13,7 +13,7 @@ const InternshipJob = () => {
   const [responseSettings, setResponseSettings] = useState({});
 
   // Submit API handler
-  const handlePostInternship = async () => {
+  const handlePostInternship = async (status) => {
     // ✅ Get token from localStorage dynamically
     const token = localStorage.getItem("token");
 
@@ -47,6 +47,7 @@ const InternshipJob = () => {
       receivedResponseOverMail: responseSettings.receivedResponseOverMail || "",
       addResponseCode: responseSettings.referenceCode || "",
       AboutCompany: details.aboutCompany || "NA",
+      Status: status,  
     };
 
     try {
