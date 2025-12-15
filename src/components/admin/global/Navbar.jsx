@@ -33,7 +33,7 @@ export const Navbar = () => {
     <div className="bg-white py-6 px-6 border-b border-gray-200 shadow-md">
       <div className="flex items-center justify-end gap-4 relative">
         <a
-          href="/my-archive"
+          href="/my-uploads"
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
         >
           Uploads

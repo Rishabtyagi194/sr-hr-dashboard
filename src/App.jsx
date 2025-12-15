@@ -11,10 +11,12 @@ import { Navbar } from './components/admin/global/Navbar';
 import EditJobPage from './components/admin/JobPostingComponents/JobBoard/EditJobModal';
 import EmployerRegistration from './pages/admin/EmployeeRegistration';
 import { Hotvacancy } from './components/admin/JobPostingComponents/HotJob/Hotvacancy';
-import { SearchResume } from './components/admin/resdex/SearchResume';
+
 import { MyArchive } from './components/admin/myArchive/MyArchive';
 import ProtectedRoute from './components/admin/global/ProtectedRoute';
 import InternshipJob from './components/admin/JobPostingComponents/Internship/InternshipJob';
+import AllUploads from './components/admin/uploads/AllUploads';
+import Resdex from './components/admin/resdex/Resdex';
 
 function Layout() {
   const location = useLocation();
@@ -43,7 +45,8 @@ function Layout() {
           <Route path="/users" element={<ProtectedRoute><AllUser /></ProtectedRoute>} />
           <Route path="/jobposting/hotvacancy" element={<ProtectedRoute><Hotvacancy /></ProtectedRoute>} />
           <Route path="/jobposting/internship" element={<ProtectedRoute><InternshipJob /></ProtectedRoute>} />
-          <Route path="/resdex/resume-search" element={<ProtectedRoute><SearchResume /></ProtectedRoute>} />
+          <Route path="/resdex/resume-search" element={<ProtectedRoute><Resdex /></ProtectedRoute>} />
+          <Route path="/my-uploads" element={<ProtectedRoute><AllUploads /></ProtectedRoute>} />
           <Route path="/my-archive" element={<ProtectedRoute><MyArchive /></ProtectedRoute>} />
         </Routes>
       </div>
