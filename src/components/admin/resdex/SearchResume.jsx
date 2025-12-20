@@ -143,16 +143,16 @@ export const SearchResume = () => {
       </div>
 
       {/* Filter Button */}
-      <button
+      {/* <button
         onClick={filterResumes}
         className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-semibold"
       >
-        Filter Resumes
-      </button>
+        Search Candidate
+      </button> */}
 
       {/* Boolean Toggle */}
       <div className="flex items-center gap-4 mt-6">
-        <div
+        {/* <div
           onClick={toggleBoolean}
           className={`relative w-14 h-7 flex items-center rounded-full cursor-pointer transition-colors duration-300 ${
             isBooleanOn ? "bg-green-500" : "bg-gray-400"
@@ -163,14 +163,14 @@ export const SearchResume = () => {
               isBooleanOn ? "translate-x-7" : "translate-x-1"
             }`}
           ></div>
-        </div>
-        <span className="text-sm font-medium text-gray-700">
+        </div> */}
+        {/* <span className="text-sm font-medium text-gray-700">
           Boolean {isBooleanOn ? "On" : "Off"}
-        </span>
+        </span> */}
       </div>
 
       {/* Results */}
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <h2 className="text-lg font-semibold mb-3">Results</h2>
         {loading && <p>Searching...</p>}
 
@@ -182,7 +182,7 @@ export const SearchResume = () => {
             <p className="text-xs mt-2 text-blue-600">{r.skills}</p>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

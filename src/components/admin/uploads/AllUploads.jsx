@@ -5,7 +5,7 @@ import { ResumeUpload } from './ResumeUpload'
 const AllUploads = () => {
   return (
     <div>
-          <div className='flex justify-center items-center gap-10 text-center' >
+          <div className='' >
       <ExcelUpload />
       <ResumeUpload />
     </div>

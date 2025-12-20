@@ -7,10 +7,10 @@ export default function ExperienceFilter() {
   const onlyNumbers = (value) => value.replace(/[^0-9]/g, "");
 
   return (
-    <div className="w-full space-y-6 p-6">
+    <div className="w-full space-y-6 pb-6 px-6">
 
       {/* -------- TOP LINKS -------- */}
-      <p className="text-blue-600 font-medium cursor-pointer">+ Add Exclude Keywords</p>
+      {/* <p className="text-blue-600 font-medium cursor-pointer">+ Add Exclude Keywords</p> */}
 
       <p
         className="text-blue-600 font-medium cursor-pointer"

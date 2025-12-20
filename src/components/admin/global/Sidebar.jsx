@@ -25,7 +25,7 @@ const Sidebar = () => {
 
   return (
     <div className="fixed top-0 left-0 w-64 h-screen bg-black text-white shadow-lg flex flex-col">
-      <h2 className="text-2xl font-bold text-center py-6">Dashboard</h2>
+      <h2 className="text-2xl font-bold text-center py-6">Rozgar Dwar</h2>
 
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {/* Static Nav Items */}

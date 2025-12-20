@@ -1,5 +1,5 @@
 import React from "react";
-import { SubNavbar } from "../../components/admin/global/SubNavbar";
+import { SubNavbar } from "../../components/admin/global/JobSubNavbar";
 import LatestJobDashboard from "../../components/admin/dashboard/LatestJob";
 
 const Home = () => {
