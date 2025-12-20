@@ -52,7 +52,7 @@ const Resdex = () => {
           </div>
 
           {/* 🔹 FIXED BOTTOM BAR */}
-          <div className="sticky bottom-0 bg-white pt-4 pb-3 border-t border-gray-200 flex items-center justify-between">
+          <div className="sticky bottom-0 bg-white p-4 pb-3 border-t border-gray-200 flex items-center justify-between">
             <p className="text-sm text-gray-700 cursor-pointer">
               Active in – <span className="font-medium">3 months</span> ▼
             </p>
