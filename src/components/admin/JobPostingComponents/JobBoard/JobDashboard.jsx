@@ -101,9 +101,9 @@ const fetchJobs = async () => {
     );
 
     const data = await res.json();
-    console.log("Jobs data: ", data);
+    console.log("Jobs data: ", data?.jobs);
 
-    if (data?.AllJobs && Array.isArray(data.AllJobs)) {
+    if (data?.AllJobs && Array.isArray(data?.AllJobs)) {
       const active = data.AllJobs.filter((job) => job.Status === "active");
       const drafts = data.AllJobs.filter(
         (job) => job.Status === "draft" || job.Status === "inactive"
@@ -128,7 +128,7 @@ const fetchInternships = async () => {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      "http://147.93.72.227:5000/api/internship/all-internships",
+      "http://147.93.72.227:5000/api/internship/employer-internships",
       {
         method: "GET",
         headers: {
@@ -138,9 +138,9 @@ const fetchInternships = async () => {
     );
 
     const data = await res.json();
-    console.log("Internship data: ", data);
+    console.log("Internship data: ", data?.jobs);
 
-    if (data?.data && Array.isArray(data.data)) {
+    if (data?.AllJobs && Array.isArray(data?.AllJobs)) {
       const active = data.data.filter((job) => job.Status === "active");
       const drafts = data.data.filter(
         (job) => job.Status === "draft" || job.Status === "inactive"

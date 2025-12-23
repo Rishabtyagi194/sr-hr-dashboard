@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import { IoChevronUp, IoChevronDown } from "react-icons/io5";
 
-export default function EducationDetailsResdex() {
+export default function EducationDetailsResdex({ filters, setFilters }) {
   const [open, setOpen] = useState(true);
-
-  const [ug, setUg] = useState("Any UG qualification");
-  const [pg, setPg] = useState("Any PG qualification");
-
-  const [educationTypeUG, setEducationTypeUG] = useState("Full Time");
-  const [educationTypePG, setEducationTypePG] = useState("Full Time");
 
   const ugOptions = [
     "Any UG qualification",
@@ -25,7 +19,7 @@ export default function EducationDetailsResdex() {
   const Pill = ({ active, label, onClick }) => (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-full border text-sm transition ${
+      className={`px-4 py-2 rounded-full border text-sm ${
         active
           ? "bg-blue-50 border-blue-500 text-blue-700"
           : "border-gray-300 text-gray-700"
@@ -58,24 +52,62 @@ export default function EducationDetailsResdex() {
                 <Pill
                   key={item}
                   label={item}
-                  active={ug === item}
-                  onClick={() => setUg(item)}
+                  active={filters.ug.mode === item}
+                  onClick={() =>
+                    setFilters({
+                      ...filters,
+                      ug: { ...filters.ug, mode: item },
+                    })
+                  }
                 />
               ))}
             </div>
           </div>
 
-          {ug === "Specific UG qualification" && (
+          {filters.ug.mode === "Specific UG qualification" && (
             <div className="space-y-4 border-t pt-4">
-              <Input label="Choose Course" placeholder="Type or select UG course" />
-              <Input label="Institute" placeholder="Select institute" />
-
-              <EducationType
-                value={educationTypeUG}
-                onChange={setEducationTypeUG}
+              <Input
+                label="Choose Course"
+                value={filters.ug.course}
+                onChange={(v) =>
+                  setFilters({
+                    ...filters,
+                    ug: { ...filters.ug, course: v },
+                  })
+                }
               />
 
-              <YearRange />
+              <Input
+                label="Institute"
+                value={filters.ug.institute}
+                onChange={(v) =>
+                  setFilters({
+                    ...filters,
+                    ug: { ...filters.ug, institute: v },
+                  })
+                }
+              />
+
+              <EducationType
+                value={filters.ug.educationType}
+                onChange={(v) =>
+                  setFilters({
+                    ...filters,
+                    ug: { ...filters.ug, educationType: v },
+                  })
+                }
+              />
+
+              <YearRange
+                fromYear={filters.ug.fromYear}
+                toYear={filters.ug.toYear}
+                onChange={(from, to) =>
+                  setFilters({
+                    ...filters,
+                    ug: { ...filters.ug, fromYear: from, toYear: to },
+                  })
+                }
+              />
             </div>
           )}
 
@@ -87,54 +119,87 @@ export default function EducationDetailsResdex() {
                 <Pill
                   key={item}
                   label={item}
-                  active={pg === item}
-                  onClick={() => setPg(item)}
+                  active={filters.pg.mode === item}
+                  onClick={() =>
+                    setFilters({
+                      ...filters,
+                      pg: { ...filters.pg, mode: item },
+                    })
+                  }
                 />
               ))}
             </div>
           </div>
 
-          {pg === "Specific PG qualification" && (
+          {filters.pg.mode === "Specific PG qualification" && (
             <div className="space-y-4 border-t pt-4">
-              <Input label="Choose PG Course" placeholder="Type or select PG course" />
-              <Input label="Institute" placeholder="Select institute" />
-
-              <EducationType
-                value={educationTypePG}
-                onChange={setEducationTypePG}
+              <Input
+                label="Choose PG Course"
+                value={filters.pg.course}
+                onChange={(v) =>
+                  setFilters({
+                    ...filters,
+                    pg: { ...filters.pg, course: v },
+                  })
+                }
               />
 
-              <YearRange />
+              <Input
+                label="Institute"
+                value={filters.pg.institute}
+                onChange={(v) =>
+                  setFilters({
+                    ...filters,
+                    pg: { ...filters.pg, institute: v },
+                  })
+                }
+              />
+
+              <EducationType
+                value={filters.pg.educationType}
+                onChange={(v) =>
+                  setFilters({
+                    ...filters,
+                    pg: { ...filters.pg, educationType: v },
+                  })
+                }
+              />
+
+              <YearRange
+                fromYear={filters.pg.fromYear}
+                toYear={filters.pg.toYear}
+                onChange={(from, to) =>
+                  setFilters({
+                    ...filters,
+                    pg: { ...filters.pg, fromYear: from, toYear: to },
+                  })
+                }
+              />
             </div>
           )}
-
-          {/* Doctorate */}
-          {/* <p className="text-blue-600 font-medium cursor-pointer">
-            + Add PPG/Doctorate Qualification
-          </p> */}
         </div>
       )}
     </div>
   );
 }
 
-/* ================= Reusable Components ================= */
+/* ---------- Reusable ---------- */
 
-const Input = ({ label, placeholder }) => (
+const Input = ({ label, value, onChange }) => (
   <div>
     <label className="text-sm font-medium text-gray-700">{label}</label>
     <input
-      type="text"
-      placeholder={placeholder}
-      className="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"
     />
   </div>
 );
 
 const EducationType = ({ value, onChange }) => (
-  <div className="space-y-2">
+  <div>
     <p className="text-sm font-medium text-gray-700">Education Type</p>
-    <div className="flex gap-2">
+    <div className="flex gap-2 mt-2">
       {["Full Time", "Part Time", "Correspondence"].map((type) => (
         <button
           key={type}
@@ -152,26 +217,29 @@ const EducationType = ({ value, onChange }) => (
   </div>
 );
 
-const YearRange = () => (
+const YearRange = ({ fromYear, toYear, onChange }) => (
   <div className="grid grid-cols-2 gap-4">
-    <div>
-      <label className="text-sm font-medium text-gray-700">From</label>
-      <select className="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
-        <option>From</option>
-        <option>2019</option>
-        <option>2020</option>
-        <option>2021</option>
-      </select>
-    </div>
+    <select
+      value={fromYear}
+      onChange={(e) => onChange(e.target.value, toYear)}
+      className="border rounded-lg px-3 py-2 text-sm"
+    >
+      <option value="">From</option>
+      <option>2019</option>
+      <option>2020</option>
+      <option>2021</option>
+      <option>2022</option>
+    </select>
 
-    <div>
-      <label className="text-sm font-medium text-gray-700">To</label>
-      <select className="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
-        <option>To</option>
-        <option>2023</option>
-        <option>2024</option>
-        <option>2025</option>
-      </select>
-    </div>
+    <select
+      value={toYear}
+      onChange={(e) => onChange(fromYear, e.target.value)}
+      className="border rounded-lg px-3 py-2 text-sm"
+    >
+      <option value="">To</option>
+      <option>2023</option>
+      <option>2024</option>
+      <option>2025</option>
+    </select>
   </div>
 );

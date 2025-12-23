@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { IoChevronUp, IoChevronDown } from "react-icons/io5";
 
-export default function DiversityAndAdditionalDetails() {
+export default function DiversityAndAdditionalDetails({ filters, setFilters }) {
   const [open, setOpen] = useState(true);
-  const [gender, setGender] = useState("Female candidates");
 
   const onlyNumbers = (value) => value.replace(/[^0-9]/g, "");
 
   const genders = [
-    "All candidates",
-    "Male candidates",
-    "Female candidates",
+    { label: "All candidates", value: "" },
+    { label: "Male candidates", value: "Male" },
+    { label: "Female candidates", value: "Female" },
   ];
 
   return (
@@ -28,7 +27,6 @@ export default function DiversityAndAdditionalDetails() {
 
       {open && (
         <div className="space-y-6">
-          {/* Diversity details */}
           <p className="text-gray-700 font-medium">Diversity details</p>
 
           {/* Gender */}
@@ -37,23 +35,31 @@ export default function DiversityAndAdditionalDetails() {
             <div className="flex flex-wrap gap-2">
               {genders.map((item) => (
                 <button
-                  key={item}
-                  onClick={() => setGender(item)}
+                  key={item.label}
+                  onClick={() =>
+                    setFilters({ ...filters, gender: item.value })
+                  }
                   className={`px-4 py-2 rounded-full border text-sm ${
-                    gender === item
+                    filters.gender === item.value
                       ? "bg-blue-50 border-blue-500 text-blue-700"
                       : "border-gray-300 text-gray-700"
                   }`}
                 >
-                  {item}
+                  {item.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Disability checkbox */}
+          {/* PWD */}
           <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input type="checkbox" className="w-4 h-4" />
+            <input
+              type="checkbox"
+              checked={filters.pwdOnly}
+              onChange={(e) =>
+                setFilters({ ...filters, pwdOnly: e.target.checked })
+              }
+            />
             Person with Disabilities only
           </label>
 
@@ -64,6 +70,13 @@ export default function DiversityAndAdditionalDetails() {
             </label>
             <input
               type="text"
+              value={filters.candidateCategory}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  candidateCategory: e.target.value,
+                })
+              }
               placeholder="Add candidate category"
               className="w-full border border-gray-300 rounded-lg px-3 py-3 outline-none focus:ring-2 focus:ring-blue-400"
             />
@@ -76,29 +89,35 @@ export default function DiversityAndAdditionalDetails() {
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Min age"
+                value={filters.minAge}
                 onChange={(e) =>
-                  (e.target.value = onlyNumbers(e.target.value))
+                  setFilters({
+                    ...filters,
+                    minAge: onlyNumbers(e.target.value),
+                  })
                 }
-                className="border border-gray-300 rounded-md px-3 py-2 w-32 outline-none"
+                placeholder="Min age"
+                className="border border-gray-300 rounded-md px-3 py-2 w-32"
               />
 
               <span className="text-gray-600">to</span>
 
               <input
                 type="text"
-                placeholder="Max age"
+                value={filters.maxAge}
                 onChange={(e) =>
-                  (e.target.value = onlyNumbers(e.target.value))
+                  setFilters({
+                    ...filters,
+                    maxAge: onlyNumbers(e.target.value),
+                  })
                 }
-                className="border border-gray-300 rounded-md px-3 py-2 w-32 outline-none"
+                placeholder="Max age"
+                className="border border-gray-300 rounded-md px-3 py-2 w-32"
               />
 
               <span className="text-gray-600">Years</span>
             </div>
           </div>
-
-      
         </div>
       )}
     </div>

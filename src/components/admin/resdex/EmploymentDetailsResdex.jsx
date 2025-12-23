@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { IoChevronUp, IoChevronDown } from "react-icons/io5";
 
-export default function EmploymentDetails() {
+export default function EmploymentDetails({ filters, setFilters }) {
   const [open, setOpen] = useState(true);
-  const [booleanValue, setBooleanValue] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState("Any");
 
   const noticeOptions = [
@@ -15,6 +14,24 @@ export default function EmploymentDetails() {
     "More than 3 months",
     "Currently serving notice period",
   ];
+
+  /* ---------- TOGGLE BOOLEAN ---------- */
+  const toggleBoolean = () => {
+    setFilters({
+      ...filters,
+      designationBoolean: filters.designationBoolean === "OR" ? "AND" : "OR",
+    });
+  };
+
+  /* ---------- NOTICE PERIOD ---------- */
+  const handleNoticeClick = (option) => {
+    setSelectedNotice(option);
+
+    setFilters({
+      ...filters,
+      noticePeriod: option === "Any" ? [] : [option],
+    });
+  };
 
   return (
     <div className="w-full p-6 border border-gray-200 rounded-xl bg-white shadow-sm space-y-4">
@@ -31,13 +48,17 @@ export default function EmploymentDetails() {
 
       {open && (
         <div className="space-y-6">
-          {/* Department & Role */}
+          {/* Department */}
           <div>
             <label className="text-gray-600 font-medium">
               Department and Role
             </label>
             <input
               type="text"
+              value={filters.department}
+              onChange={(e) =>
+                setFilters({ ...filters, department: e.target.value })
+              }
               placeholder="Add Department/Role"
               className="mt-1 w-full border rounded-lg px-3 py-3"
             />
@@ -48,6 +69,10 @@ export default function EmploymentDetails() {
             <label className="text-gray-600 font-medium">Industry</label>
             <input
               type="text"
+              value={filters.industry}
+              onChange={(e) =>
+                setFilters({ ...filters, industry: e.target.value })
+              }
               placeholder="Add industry"
               className="mt-1 w-full border rounded-lg px-3 py-3"
             />
@@ -58,17 +83,13 @@ export default function EmploymentDetails() {
             <label className="text-gray-600 font-medium">Company</label>
             <input
               type="text"
+              value={filters.company}
+              onChange={(e) =>
+                setFilters({ ...filters, company: e.target.value })
+              }
               placeholder="Add company name"
               className="mt-1 w-full border rounded-lg px-3 py-3"
             />
-
-            <p className="text-sm text-gray-600 mt-1 cursor-pointer">
-              Search in <span className="font-medium">Current company</span> ▼
-            </p>
-
-            <p className="text-blue-600 text-sm mt-2 cursor-pointer">
-              + Add Exclude Company
-            </p>
           </div>
 
           {/* Designation */}
@@ -76,52 +97,61 @@ export default function EmploymentDetails() {
             <div className="flex items-center justify-between">
               <label className="text-gray-600 font-medium">Designation</label>
 
-              {/* Boolean toggle */}
-              <div
-                onClick={() => setBooleanValue(!booleanValue)}
+              {/* Boolean Toggle */}
+              {/* <div
+                onClick={toggleBoolean}
                 className={`w-12 h-6 rounded-full p-1 cursor-pointer ${
-                  booleanValue ? "bg-blue-600" : "bg-gray-300"
+                  filters.designationBoolean === "AND"
+                    ? "bg-blue-600"
+                    : "bg-gray-300"
                 }`}
               >
                 <div
                   className={`bg-white w-5 h-5 rounded-full transition-all ${
-                    booleanValue ? "translate-x-6" : ""
+                    filters.designationBoolean === "AND"
+                      ? "translate-x-6"
+                      : ""
                   }`}
                 />
-              </div>
+              </div> */}
             </div>
 
             <input
               type="text"
+              value={filters.designation}
+              onChange={(e) =>
+                setFilters({ ...filters, designation: e.target.value })
+              }
               placeholder="Add designation"
               className="mt-1 w-full border rounded-lg px-3 py-3"
             />
-
-            <p className="text-sm text-gray-600 mt-1 cursor-pointer">
-              Search in <span className="font-medium">Current designation</span> ▼
-            </p>
+{/* 
+            <p className="text-sm text-gray-600 mt-1">
+              Boolean:
+              <span className="font-medium ml-1">
+                {filters.designationBoolean}
+              </span>
+            </p> */}
           </div>
 
           {/* Notice Period */}
           <div>
-            <label className="text-gray-700 font-semibold flex items-center gap-1">
+            <label className="text-gray-700 font-semibold">
               Notice Period / Availability to join
-              <span className="text-gray-400">ⓘ</span>
             </label>
 
             <div className="flex flex-wrap gap-2 mt-3">
               {noticeOptions.map((option) => (
                 <button
                   key={option}
-                  onClick={() => setSelectedNotice(option)}
-                  className={`px-4 py-2 rounded-full border text-sm flex items-center gap-1 ${
+                  onClick={() => handleNoticeClick(option)}
+                  className={`px-4 py-2 rounded-full border text-sm ${
                     selectedNotice === option
                       ? "bg-blue-50 border-blue-500 text-blue-700"
                       : "border-gray-300 text-gray-700"
                   }`}
                 >
                   {option}
-                  <span className="text-lg">+</span>
                 </button>
               ))}
             </div>

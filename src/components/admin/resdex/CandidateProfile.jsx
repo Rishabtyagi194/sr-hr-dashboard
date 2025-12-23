@@ -11,7 +11,6 @@ const CandidateProfilePage = () => {
     <div className="h-[calc(100vh-80px)] p-6 flex gap-6">
       {/* LEFT: SEARCH RESULTS */}
       <div className="w-[420px] shrink-0 overflow-y-auto bg-gray-50 rounded-lg p-4">
-        
         <CandidateSearchResults show={true} />
       </div>
 
