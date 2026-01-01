@@ -24,6 +24,7 @@ import AllUploads from "./components/admin/uploads/AllUploads";
 import Resdex from "./components/admin/resdex/Resdex";
 import CandidateProfilePage from "./components/admin/resdex/CandidateProfile";
 import ResdexNavbar from "./components/admin/global/ResdexNavbar";
+import JobDetails from "./components/admin/JobPostingComponents/JobBoard/JobDetailsById";
 
 function Layout() {
   const location = useLocation();
@@ -77,6 +78,12 @@ function Layout() {
               </ProtectedRoute>
             }
           />
+
+<Route
+  path="/jobposting/:id"
+  element={<JobDetails />}
+/>
+
 
           <Route
             path="/jobposting/jobs/:id"

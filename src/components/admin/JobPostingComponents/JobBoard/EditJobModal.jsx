@@ -7,7 +7,7 @@ import { useParams, useNavigate } from "react-router-dom";
 //   { id: 2, title: "Urgent Hiring- Telesales Associates II Bengaluru", location: "Bengaluru", tag: "Invite", postedBy: "Me", date: "26 Aug 2025" },
 // ];
 
-const EditJobPage = () => {
+const EditJobPage = ({jobs}) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);

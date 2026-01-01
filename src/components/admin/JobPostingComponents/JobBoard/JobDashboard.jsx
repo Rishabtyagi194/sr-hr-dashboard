@@ -1,81 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { FiRefreshCw } from "react-icons/fi";
-import { MdEdit, MdDelete } from "react-icons/md";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
 
-const JobCard = ({ job, onDelete }) => {
-  const navigate = useNavigate();
+import { JobCard } from "./JobCard";
 
-  const handleDelete = (id) => {
-    onDelete(id);
-  };
 
-  return (
-    <div className="flex items-start justify-between bg-white rounded-lg border border-gray-200 shadow p-4 mb-3 hover:shadow-md transition">
-      {/* Left */}
-      <div className="flex items-start gap-3">
-        <input type="checkbox" className="mt-2" />
-        <div>
-          <h2 className="font-semibold text-gray-800">
-            {job?.jobTitle || "NA"}
-          </h2>
-          <p className="text-sm text-gray-500">{job?.location}</p>
-
-          {job?.Status && (
-            <span className="inline-block text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded mt-1">
-              {job?.Status}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Middle (Only for Job) */}
-      {job?.totalResponses !== undefined && (
-        <div className="flex items-center gap-6">
-          <div className="text-center">
-            <p className="text-blue-600 font-bold">{job.totalResponses || 0}</p>
-            <p className="text-xs text-gray-500">Total Responses</p>
-          </div>
-          <div className="text-center">
-            <p className="text-gray-800 font-bold">{job.shortlisted || 0}</p>
-            <p className="text-xs text-gray-500">Shortlisted</p>
-          </div>
-        </div>
-      )}
-
-      {/* Right */}
-      <div className="flex items-center gap-4 text-gray-500">
-        <FiRefreshCw className="cursor-pointer" />
-        <MdEdit
-          className="cursor-pointer"
-          onClick={() => navigate(`/jobposting/jobs/${job.job_id}`)}
-        />
-
-        {job?.job_id && (
-          <MdDelete
-            className="cursor-pointer text-red-500 hover:text-red-600"
-            onClick={() => handleDelete(job.job_id)}
-          />
-        )}
-
-        <BsThreeDotsVertical className="cursor-pointer" />
-        <div className="text-xs text-gray-400">
-          <p>
-            Posted on:{" "}
-            {new Date(job?.created_at || job?.createdAt).toLocaleDateString(
-              "en-GB"
-            )}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const JobDashboard = () => {
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("hot");
+
   const [allJobs, setAllJobs] = useState([]);
+  const [hotJobs, setHotJobs] = useState([]);
   const [draftJobs, setDraftJobs] = useState([]);
 
   const [internshipsActive, setInternshipsActive] = useState([]);
@@ -83,80 +16,78 @@ const JobDashboard = () => {
 
   const [loading, setLoading] = useState(true);
 
-  
+  // ================= FETCH JOBS =================
+  const fetchJobs = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-// ✅ Fetch JOBS
-const fetchJobs = async () => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(
-      "http://147.93.72.227:5000/api/jobs/employer-jobs",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const data = await res.json();
-    console.log("Jobs data: ", data?.jobs);
-
-    if (data?.AllJobs && Array.isArray(data?.AllJobs)) {
-      const active = data.AllJobs.filter((job) => job.Status === "active");
-      const drafts = data.AllJobs.filter(
-        (job) => job.Status === "draft" || job.Status === "inactive"
+      const res = await fetch(
+        "http://147.93.72.227:5000/api/jobs/employer-jobs",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      setAllJobs(active);
-      setDraftJobs(drafts);
-    } else {
-      setAllJobs([]);
-      setDraftJobs([]);
-    }
-  } catch (error) {
-    console.error("Error fetching jobs:", error);
-  }
-};
+      const data1 = await res.json();
+      console.log("Jobs data:", data1?.jobs);
 
+      if (Array.isArray(data1?.jobs)) {
+        const active = data1.jobs.filter(
+          (job) => job.Status === "active"
+        );
 
+        const drafts = data1.jobs.filter(
+          (job) => job.Status === "draft" || job.Status === "inactive"
+        );
 
-// ✅ Fetch INTERNSHIPS
-const fetchInternships = async () => {
-  try {
-    const token = localStorage.getItem("token");
+        const hotVacancy = active.filter(
+          (job) => job.category === "HotVacancy"
+        );
 
-    const res = await fetch(
-      "http://147.93.72.227:5000/api/internship/employer-internships",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        setAllJobs(active);
+        setDraftJobs(drafts);
+        setHotJobs(hotVacancy);
       }
-    );
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+    }
+  };
 
-    const data = await res.json();
-    console.log("Internship data: ", data?.jobs);
+  // ================= FETCH INTERNSHIPS =================
+  const fetchInternships = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    if (data?.AllJobs && Array.isArray(data?.AllJobs)) {
-      const active = data.data.filter((job) => job.Status === "active");
-      const drafts = data.data.filter(
-        (job) => job.Status === "draft" || job.Status === "inactive"
+      const res = await fetch(
+        "http://147.93.72.227:5000/api/internship/employer-internships",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      setInternshipsActive(active);
-      setInternshipsDraft(drafts);
-    } else {
-      setInternshipsActive([]);
-      setInternshipsDraft([]);
-    }
-  } catch (error) {
-    console.error("Error fetching internships:", error);
-  }
-};
+      const data = await res.json();
 
+      if (Array.isArray(data?.jobs)) {
+        setInternshipsActive(
+          data.jobs.filter((job) => job.Status === "active")
+        );
+
+        setInternshipsDraft(
+          data.jobs.filter(
+            (job) => job.Status === "draft" || job.Status === "inactive"
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching internships:", error);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -167,36 +98,55 @@ const fetchInternships = async () => {
     load();
   }, []);
 
-  // ✅ Delete job from UI (only UI remove)
-  const handleDeleteJob = (id) => {
-    setAllJobs((prev) => prev.filter((job) => job.job_id !== id));
-    setDraftJobs((prev) => prev.filter((job) => job.job_id !== id));
+  // ================= DELETE API =================
+  const handleDeleteJob = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this job?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `http://147.93.72.227/api/jobs/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Delete failed");
+      }
+
+      // ✅ Remove from UI after successful delete
+      setAllJobs((prev) => prev.filter((job) => job.job_id !== id));
+      setHotJobs((prev) => prev.filter((job) => job.job_id !== id));
+      setDraftJobs((prev) => prev.filter((job) => job.job_id !== id));
+      setInternshipsActive((prev) =>
+        prev.filter((job) => job.job_id !== id)
+      );
+      setInternshipsDraft((prev) =>
+        prev.filter((job) => job.job_id !== id)
+      );
+
+      console.log("Job deleted successfully:", id);
+    } catch (error) {
+      console.error("Delete job error:", error);
+      alert("Failed to delete job. Please try again.");
+    }
   };
 
-  // ✅ TAB Content
+  // ================= TAB DATA =================
   let jobsToShow = [];
-
-  if (activeTab === "all") jobsToShow = allJobs;
-  if (activeTab === "hot") jobsToShow = allJobs;
+  if (activeTab === "hot") jobsToShow = hotJobs;
   if (activeTab === "internships") jobsToShow = internshipsActive;
   if (activeTab === "drafts") jobsToShow = draftJobs;
   if (activeTab === "internshipDraft") jobsToShow = internshipsDraft;
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {/* ✅ Tabs */}
       <div className="flex items-center gap-6 border-b pb-2 mb-4">
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`font-semibold pb-1 ${
-            activeTab === "all"
-              ? "border-b-2 border-red-500 text-gray-800"
-              : "text-gray-500"
-          }`}
-        >
-          All Jobs ({allJobs.length})
-        </button>
-
         <button
           onClick={() => setActiveTab("hot")}
           className={`font-semibold pb-1 ${
@@ -205,7 +155,7 @@ const fetchInternships = async () => {
               : "text-gray-500"
           }`}
         >
-          Hot Vacancy ({allJobs.length})
+          Hot Vacancy ({hotJobs.length})
         </button>
 
         <button
@@ -242,7 +192,6 @@ const fetchInternships = async () => {
         </button>
       </div>
 
-      {/* ✅ Loading / Empty / Cards */}
       {loading ? (
         <p className="text-gray-500 text-center">Loading...</p>
       ) : jobsToShow.length === 0 ? (
