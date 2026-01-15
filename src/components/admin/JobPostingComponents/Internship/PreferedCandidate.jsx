@@ -2,17 +2,10 @@ import React, { useEffect, useState } from "react";
 
 const PereferedCandidate = ({ setCandidate }) => {
   const [skills, setSkills] = useState([
-    "Human Resource Management",
-    "Attendance Management",
-    "Performance Management",
-    "Attrition Analysis",
-    "Retention Strategies",
-    "Change Management",
   ]);
   const [inputSkill, setInputSkill] = useState("");
   const [education, setEducation] = useState([
-    "MCA",
-    "BCA",
+
   ]);
   const [videoProfile, setVideoProfile] = useState("No");
 
@@ -60,7 +53,7 @@ const PereferedCandidate = ({ setCandidate }) => {
               key={index}
               className="flex items-center gap-1 bg-blue-50 border border-blue-400 text-blue-600 px-3 py-1 rounded-full"
             >
-              ⭐ {skill}
+              {skill}
               <button
                 onClick={() => removeSkill(skill)}
                 className="ml-1 text-gray-500 hover:text-gray-700"

@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import {
+  FaMapMarkerAlt,
+  FaBriefcase,
+  FaRupeeSign,
+  FaStar,
+} from "react-icons/fa";
 
 const JobDetails = () => {
-  const { job_id } = useParams();
+  const { id } = useParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -10,9 +16,8 @@ const JobDetails = () => {
     const fetchJobDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-
         const res = await fetch(
-          `http://147.93.72.227:5000/api/jobs/employer-jobs`,
+          `http://147.93.72.227:5000/api/jobs/employer-job/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -21,12 +26,7 @@ const JobDetails = () => {
         );
 
         const data = await res.json();
-
-        const foundJob = data?.jobs?.find(
-          (j) => String(j.job_id) === String(job_id)
-        );
-
-        setJob(foundJob || null);
+        setJob(data?.job || data || null);
       } catch (error) {
         console.error("Error fetching job details:", error);
       } finally {
@@ -35,117 +35,133 @@ const JobDetails = () => {
     };
 
     fetchJobDetails();
-  }, [job_id]);
+  }, [id]);
 
-  if (loading) {
+  if (loading)
     return <p className="text-center text-gray-500">Loading job details...</p>;
-  }
-
-  if (!job) {
-    return <p className="text-center text-red-500">Job not found</p>;
-  }
+  if (!job) return <p className="text-center text-red-500">Job not found</p>;
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white shadow rounded-lg">
-      {/* HEADER */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">
-        {job.jobTitle}
-      </h1>
-      <p className="text-gray-600 mb-4">
-        {job.jobLocation?.city}, {job.jobLocation?.state},{" "}
-        {job.jobLocation?.country}
-      </p>
+    <div className="max-w-6xl mx-auto p-6 space-y-6">
+      {/* ================= HEADER CARD ================= */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {job.jobTitle}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              {job.companyName || "Company Name"}
+            </p>
 
-      {/* META */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <p><strong>Status:</strong> {job.Status}</p>
-        <p><strong>Category:</strong> {job.category}</p>
-        <p><strong>Employment Type:</strong> {job.employmentType}</p>
-        <p><strong>Work Mode:</strong> {job.workMode}</p>
-        <p><strong>Experience:</strong> {job.experinceFrom} – {job.experinceTo} years</p>
-        <p><strong>Salary:</strong> ₹{job.salaryRangeFrom} – ₹{job.salaryRangeTo}</p>
+            <div className="flex flex-wrap gap-6 mt-3 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <FaBriefcase />
+                <span>
+                  {job.experinceFrom} - {job.experinceTo} years
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <FaRupeeSign />
+                {job?.salaryRangeFrom && job?.salaryRangeTo ? (
+                  <span>
+                    {job.salaryRangeFrom} - {job.salaryRangeTo} LPA
+                  </span>
+                ) : job?.offerStipend ? (
+                  <span>{job.offerStipend}</span>
+                ) : (
+                  <span className="text-gray-400">Not Disclosed</span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <FaMapMarkerAlt />
+                <span>
+                  {job.jobLocation?.city}, {job.jobLocation?.state}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Logo */}
+          <div className="w-14 h-14 rounded-lg border flex items-center justify-center text-xl font-bold">
+            {job.companyName?.[0] || "C"}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mt-6 pt-4 border-t">
+          <p className="text-sm text-gray-500">
+            Posted {new Date(job.created_at).toLocaleDateString("en-GB")}
+          </p>
+
+          <div className="flex justify-between items-center mt-6 pt-4 border-t">
+            <p className="text-sm text-gray-500">
+              Posted {new Date(job.created_at).toLocaleDateString("en-GB")}
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* DESCRIPTION */}
-      <section className="mb-6">
-        <h2 className="font-semibold text-lg mb-2">Job Description</h2>
-        <p className="text-gray-700">{job.jobDescription}</p>
-      </section>
-
-      {/* SKILLS */}
-      <section className="mb-6">
-        <h2 className="font-semibold text-lg mb-2">Skills</h2>
-        <div className="flex flex-wrap gap-2">
-          {job.skills?.map((skill, i) => (
-            <span
-              key={i}
-              className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* QUALIFICATION */}
-      <section className="mb-6">
-        <h2 className="font-semibold text-lg mb-2">Qualification</h2>
-        <ul className="list-disc pl-6 text-gray-700">
-          {job.qualification?.map((q, i) => (
-            <li key={i}>{q}</li>
-          ))}
+      {/* ================= JOB HIGHLIGHTS ================= */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <h2 className="text-lg font-semibold mb-4">Job highlights</h2>
+        <ul className="list-disc pl-6 space-y-2 text-gray-700">
+          {job.jobHighlights?.length > 0 ? (
+            job.jobHighlights.map((item, i) => <li key={i}>{item}</li>)
+          ) : (
+            <>
+              <li>
+                Fresher with strong knowledge of manual testing and automation
+                basics
+              </li>
+              <li>Work on web and mobile application testing</li>
+              <li>Competitive salary and performance-based bonuses</li>
+            </>
+          )}
         </ul>
-      </section>
 
-      {/* COMPANY */}
-      <section className="mb-6">
-        <h2 className="font-semibold text-lg mb-2">About Company</h2>
-        <p><strong>Industry:</strong> {job.CompanyIndustry}</p>
-        <p className="mt-2 text-gray-700">{job.AboutCompany}</p>
-      </section>
+        <div className="mt-4">
+          <h3 className="font-medium mb-2">Job match score</h3>
+          <div className="flex flex-wrap gap-4 text-sm">
+            <span className="flex items-center gap-1 text-green-600">
+              <FaStar /> Early Applicant
+            </span>
+            <span className="text-gray-400">Keyskills</span>
+            <span className="text-gray-400">Location</span>
+            <span className="text-gray-400">Work Experience</span>
+          </div>
+        </div>
+      </div>
 
-      {/* CONTACT */}
-      <section className="mb-6">
-        <h2 className="font-semibold text-lg mb-2">Contact Details</h2>
-        <p><strong>Contact Person:</strong> {job.contact_person}</p>
-        <p><strong>Contact Number:</strong> {job.contact_number}</p>
-        <p><strong>Email:</strong> {job.postedBy}</p>
-      </section>
+      {/* ================= JOB DESCRIPTION ================= */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <h2 className="text-lg font-semibold mb-3">Job description</h2>
+        <p className="text-gray-700 leading-relaxed">{job.jobDescription}</p>
+      </div>
 
-      {/* WALK-IN DETAILS */}
-      {job.include_walk_in_details === 1 && (
-        <section className="mb-6">
-          <h2 className="font-semibold text-lg mb-2">Walk-in Details</h2>
-          <p><strong>Venue:</strong> {job.venue}</p>
-          <p><strong>Start Date:</strong> {new Date(job.walk_in_start_date).toDateString()}</p>
-          <p><strong>Time:</strong> {job.walk_in_start_time} – {job.walk_in_end_time}</p>
-          <a
-            href={job.google_maps_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline mt-2 inline-block"
-          >
-            View on Google Maps
-          </a>
-        </section>
-      )}
-
-      {/* QUESTIONS */}
-      {job.questions?.length > 0 && (
-        <section className="mb-6">
-          <h2 className="font-semibold text-lg mb-2">Screening Questions</h2>
-          <ul className="list-decimal pl-6 text-gray-700">
-            {job.questions.map((q, i) => (
-              <li key={i}>{q.question}</li>
+      {/* ================= SKILLS ================= */}
+      {job.skills?.length > 0 && (
+        <div className="bg-white rounded-xl shadow p-6">
+          <h2 className="text-lg font-semibold mb-3">Key skills</h2>
+          <div className="flex flex-wrap gap-2">
+            {job.skills.map((skill, i) => (
+              <span
+                key={i}
+                className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm"
+              >
+                {skill}
+              </span>
             ))}
-          </ul>
-        </section>
+          </div>
+        </div>
       )}
 
-      {/* FOOTER */}
-      <p className="text-xs text-gray-400 mt-8">
-        Posted on {new Date(job.created_at).toLocaleDateString("en-GB")}
-      </p>
+      {/* ================= COMPANY ================= */}
+      <div className="bg-white rounded-xl shadow p-6">
+        <h2 className="text-lg font-semibold mb-3">About company</h2>
+        <p className="text-gray-700">{job.AboutCompany}</p>
+      </div>
     </div>
   );
 };

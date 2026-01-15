@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from "react";
-
 import { JobCard } from "./JobCard";
 
+// ✅ Skeleton Card Component
+const JobCardSkeleton = () => {
+  return (
+    <div className="bg-white rounded-xl shadow p-4 mb-4 animate-pulse">
+      <div className="h-5 w-1/3 bg-gray-300 rounded mb-3"></div>
+      <div className="h-4 w-1/2 bg-gray-300 rounded mb-2"></div>
+      <div className="h-4 w-2/3 bg-gray-300 rounded mb-2"></div>
+      <div className="h-4 w-1/4 bg-gray-300 rounded mb-4"></div>
 
+      <div className="flex gap-3">
+        <div className="h-8 w-20 bg-gray-300 rounded"></div>
+        <div className="h-8 w-20 bg-gray-300 rounded"></div>
+      </div>
+    </div>
+  );
+};
 
 const JobDashboard = () => {
   const [activeTab, setActiveTab] = useState("hot");
@@ -35,9 +49,7 @@ const JobDashboard = () => {
       console.log("Jobs data:", data1?.jobs);
 
       if (Array.isArray(data1?.jobs)) {
-        const active = data1.jobs.filter(
-          (job) => job.Status === "active"
-        );
+        const active = data1.jobs.filter((job) => job.Status === "active");
 
         const drafts = data1.jobs.filter(
           (job) => job.Status === "draft" || job.Status === "inactive"
@@ -98,22 +110,24 @@ const JobDashboard = () => {
     load();
   }, []);
 
-  // ================= DELETE API =================
-  const handleDeleteJob = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this job?")) return;
+  // ================= DELETE HANDLER (JOB + INTERNSHIP) =================
+  const handleDelete = async (id, type) => {
+    if (!window.confirm("Are you sure you want to delete this?")) return;
 
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(
-        `http://147.93.72.227/api/jobs/delete/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const url =
+        type === "internship"
+          ? `http://147.93.72.227:5000/api/internship/delete/${id}`
+          : `http://147.93.72.227:5000/api/jobs/delete/${id}`;
+
+      const res = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!res.ok) {
         throw new Error("Delete failed");
@@ -130,19 +144,36 @@ const JobDashboard = () => {
         prev.filter((job) => job.job_id !== id)
       );
 
-      console.log("Job deleted successfully:", id);
+      console.log("Deleted successfully:", id);
     } catch (error) {
-      console.error("Delete job error:", error);
-      alert("Failed to delete job. Please try again.");
+      console.error("Delete error:", error);
+      alert("Failed to delete. Please try again.");
     }
   };
 
   // ================= TAB DATA =================
   let jobsToShow = [];
-  if (activeTab === "hot") jobsToShow = hotJobs;
-  if (activeTab === "internships") jobsToShow = internshipsActive;
-  if (activeTab === "drafts") jobsToShow = draftJobs;
-  if (activeTab === "internshipDraft") jobsToShow = internshipsDraft;
+  let type = "job";
+
+  if (activeTab === "hot") {
+    jobsToShow = hotJobs;
+    type = "job";
+  }
+
+  if (activeTab === "internships") {
+    jobsToShow = internshipsActive;
+    type = "internship";
+  }
+
+  if (activeTab === "drafts") {
+    jobsToShow = draftJobs;
+    type = "job";
+  }
+
+  if (activeTab === "internshipDraft") {
+    jobsToShow = internshipsDraft;
+    type = "internship";
+  }
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -193,7 +224,11 @@ const JobDashboard = () => {
       </div>
 
       {loading ? (
-        <p className="text-gray-500 text-center">Loading...</p>
+        <>
+          {[1, 2, 3, 4].map((item) => (
+            <JobCardSkeleton key={item} />
+          ))}
+        </>
       ) : jobsToShow.length === 0 ? (
         <p className="text-gray-500 text-center">No records found.</p>
       ) : (
@@ -201,7 +236,8 @@ const JobDashboard = () => {
           <JobCard
             key={job._id || job.job_id}
             job={job}
-            onDelete={handleDeleteJob}
+            onDelete={handleDelete}
+            type={type}   // 🔥 IMPORTANT
           />
         ))
       )}

@@ -28,7 +28,7 @@ const EmployerRegistration = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://31.97.61.6:5000/api/company/register", {
+      const response = await fetch("http://31.97.61.6:5000/api/organization/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

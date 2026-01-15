@@ -1,46 +1,93 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-// Mock jobs (you can fetch from API instead)
-// const jobs = [
-//   { id: 1, title: "Urgent Hiring II Technical Retail Associate", location: "Bengaluru", tag: "Hot Vacancy", postedBy: "Me", date: "26 Aug 2025" },
-//   { id: 2, title: "Urgent Hiring- Telesales Associates II Bengaluru", location: "Bengaluru", tag: "Invite", postedBy: "Me", date: "26 Aug 2025" },
-// ];
-
-const EditJobPage = ({jobs}) => {
-  const { id } = useParams();
+const EditJobPage = () => {
+  const { id } = useParams(); // job_id from URL
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Normally you fetch job by ID here
-    const foundJob = jobs.find((j) => j.id === parseInt(id));
-    setJob(foundJob || null);
+    const fetchJob = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(
+          `http://147.93.72.227:5000/api/jobs/employer-job/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+        console.log("Edit job API response:", data);
+
+        // API already returns single job
+        setJob(data?.job || data || null);
+      } catch (error) {
+        console.error("Error fetching job:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJob();
   }, [id]);
 
   const handleChange = (e) => {
-    setJob({ ...job, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setJob((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSave = () => {
-    console.log("Updated Job:", job);
-    navigate("/");
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `http://147.93.72.227:5000/api/jobs/update-job/${id}`, // confirm endpoint with backend
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(job),
+        }
+      );
+
+      const data = await res.json();
+      console.log("Update response:", data);
+
+      alert("Job updated successfully");
+      navigate(-1);
+    } catch (error) {
+      console.error("Error updating job:", error);
+      alert("Failed to update job");
+    }
   };
 
+  if (loading) return <p className="p-6">Loading...</p>;
   if (!job) return <p className="p-6">Job not found.</p>;
 
   return (
     <div className="p-6 min-h-screen bg-gray-100">
-      <div className="bg-white shadow rounded p-6 max-w-xl mx-auto">
-        <h2 className="text-xl font-semibold mb-4">Post a Job #{id}</h2>
+      <div className="bg-white shadow rounded-2xl p-6 max-w-xl mx-auto">
+        <h2 className="text-xl font-semibold mb-6">Edit Job #{id}</h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-600">Job title / Designation</label>
+            <label className="block text-sm text-gray-600">
+              Job title / Designation
+            </label>
             <input
               type="text"
-              name="title"
-              value={job.title}
+              name="jobTitle"
+              value={job.jobTitle || ""}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2 mt-1"
             />
@@ -50,42 +97,64 @@ const EditJobPage = ({jobs}) => {
             <label className="block text-sm text-gray-600">Location</label>
             <input
               type="text"
-              name="location"
-              value={job.location}
+              name="locality"
+              value={job.locality || ""}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2 mt-1"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600">Tag</label>
+            <label className="block text-sm text-gray-600">Experience From</label>
             <input
-              type="text"
-              name="tag"
-              value={job.tag}
+              type="number"
+              name="experinceFrom"
+              value={job.experinceFrom || ""}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2 mt-1"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600">Posted By</label>
+            <label className="block text-sm text-gray-600">Experience To</label>
             <input
-              type="text"
-              name="postedBy"
-              value={job.postedBy}
+              type="number"
+              name="experinceTo"
+              value={job.experinceTo || ""}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2 mt-1"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600">Date</label>
+            <label className="block text-sm text-gray-600">Salary From (LPA)</label>
             <input
-              type="text"
-              name="date"
-              value={job.date}
+              type="number"
+              name="salaryRangeFrom"
+              value={job.salaryRangeFrom || ""}
               onChange={handleChange}
+              className="w-full border rounded px-3 py-2 mt-1"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-600">Salary To (LPA)</label>
+            <input
+              type="number"
+              name="salaryRangeTo"
+              value={job.salaryRangeTo || ""}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2 mt-1"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-600">Job Description</label>
+            <textarea
+              name="jobDescription"
+              value={job.jobDescription || ""}
+              onChange={handleChange}
+              rows={4}
               className="w-full border rounded px-3 py-2 mt-1"
             />
           </div>
@@ -102,7 +171,7 @@ const EditJobPage = ({jobs}) => {
             onClick={handleSave}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
-            Save
+            Save Changes
           </button>
         </div>
       </div>

@@ -79,14 +79,10 @@ function Layout() {
             }
           />
 
-<Route
-  path="/jobposting/:id"
-  element={<JobDetails />}
-/>
-
+          <Route path="/jobposting/:id" element={<JobDetails />} />
 
           <Route
-            path="/jobposting/jobs/:id"
+            path="/jobposting/editjob/:id"
             element={
               <ProtectedRoute>
                 <EditJobPage />
@@ -182,8 +178,6 @@ function Layout() {
     </div>
   );
 }
-
-
 
 function App() {
   return (

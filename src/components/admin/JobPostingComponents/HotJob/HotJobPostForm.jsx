@@ -1,5 +1,16 @@
 import React, { useState } from "react";
 import AddQuestionModal from "./AddQuestionModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 const JobPostForm = ({}) => {
   const [jobTitle, setJobTitle] = useState("");
@@ -17,6 +28,55 @@ const JobPostForm = ({}) => {
   const [venue, setVenue] = useState("");
   const [googleMapsUrl, setGoogleMapsUrl] = useState("");
   const [questions, setQuestions] = useState([]);
+  const [isConsultantJobActive, setIsConsultantJobActive] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(null); // "active" or "draft"
+  const [isPosting, setIsPosting] = useState(false);
+  const navigate = useNavigate();
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!jobTitle.trim()) newErrors.jobTitle = "Job title is required";
+    if (keyskills.length === 0)
+      newErrors.keyskills = "At least one key skill is required";
+    if (!companyIndustry)
+      newErrors.companyIndustry = "Company industry is required";
+    if (!workMode) newErrors.workMode = "Work mode is required";
+    if (locations.length === 0)
+      newErrors.locations = "At least one location is required";
+    if (!expFrom || !expTo)
+      newErrors.experience = "Experience range is required";
+    if (!salaryFrom || !salaryTo) newErrors.salary = "Salary range is required";
+    if (education.length === 0)
+      newErrors.education = "At least one education is required";
+    if (!jobDescription.trim())
+      newErrors.jobDescription = "Job description is required";
+    if (!aboutcompany.trim())
+      newErrors.aboutcompany = "About company is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const isFormValid = () => {
+    return (
+      jobTitle.trim() &&
+      keyskills.length > 0 &&
+      companyIndustry &&
+      workMode &&
+      locations.length > 0 &&
+      expFrom &&
+      expTo &&
+      salaryFrom &&
+      salaryTo &&
+      education.length > 0 &&
+      jobDescription.trim() &&
+      aboutcompany.trim()
+    );
+  };
 
   const formatTime = (time) => {
     if (!time) return "";
@@ -115,44 +175,48 @@ const JobPostForm = ({}) => {
   };
 
   const handleDeleteJob = async (jobId) => {
-  if (!jobId) {
-    alert("Job ID not found!");
-    return;
-  }
-
-  if (!window.confirm("Are you sure you want to delete this job?")) return;
-
-  const token = localStorage.getItem("token");
-
-  try {
-    const response = await fetch(
-      `http://147.93.72.227:5000/api/jobs/delete/${jobId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
-    );
-
-    const data = await response.json();
-    console.log("Delete Response:", data);
-
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to delete job");
+    if (!jobId) {
+      alert("Job ID not found!");
+      return;
     }
 
-    alert("Job deleted successfully!");
-  } catch (error) {
-    console.error("Error deleting job:", error);
-    alert("Error deleting job: " + error.message);
-  }
-};
+    if (!window.confirm("Are you sure you want to delete this job?")) return;
 
+    const token = localStorage.getItem("token");
 
-  const handleSubmit = async (e, status) => {
-    e.preventDefault();
-  
+    try {
+      const response = await fetch(
+        `http://147.93.72.227:5000/api/jobs/delete/${jobId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log("Delete Response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete job");
+      }
+
+      alert("Job deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      alert("Error deleting job: " + error.message);
+    }
+  };
+
+  const handleSubmit = async (status) => {
+    // e.preventDefault();
+
+    if (!validateForm()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     const payload = {
       jobTitle,
       employmentType,
@@ -182,42 +246,46 @@ const JobPostForm = ({}) => {
       google_maps_url: includeWalkin ? googleMapsUrl : "",
       duration_days: includeWalkin ? Number(walkinDuration) : 0,
       contact_number: includeWalkin ? contactNumber : "",
-      questions: questions.map((q) => ({
-        question: q.question || q,
-        type: q.type || "short_answer",
-        mandatory: q.mandatory || false,
-        options: q.options || [],
-        validation: q.validation || "",
-      })),
+      // questions: questions.map((q) => ({
+      //   question: q.question || q,
+      //   type: q.type || "short_answer",
+      //   mandatory: q.mandatory || false,
+      //   options: q.options || [],
+      //   validation: q.validation || "",
+      // })),
+      questions: questions,
       Status: status,
+      is_consultant_Job_Active: isConsultantJobActive,
     };
-  
+
     const token = localStorage.getItem("token");
-  
+
     try {
-      const response = await fetch("http://147.93.72.227:5000/api/jobs/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify(payload),
-      });
-  
+      const response = await fetch(
+        "http://147.93.72.227:5000/api/jobs/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
       const data = await response.json();
       console.log("Response:", data);
-  
+
       if (!response.ok) {
         throw new Error(data.message || "Failed to create job");
       }
+
   
-      alert(status === "draft" ? "Job saved as draft!" : "Job posted successfully!");
     } catch (error) {
       console.error("Error creating job:", error);
-      alert("Error creating job: " + error.message);
+      // alert("Error creating job: " + error.message);
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
@@ -644,6 +712,17 @@ const JobPostForm = ({}) => {
             )}
           </div>
 
+          <label className="flex items-center gap-2 mt-2">
+            <input
+              type="checkbox"
+              checked={isConsultantJobActive}
+              onChange={(e) => setIsConsultantJobActive(e.target.checked)}
+            />
+            <span className="text-sm text-gray-600">
+              Vacancy should be visible to consultancy?
+            </span>
+          </label>
+
           {/* Questions */}
           <div className="col-span-2">
             <label className="block text-sm mb-2">
@@ -654,11 +733,12 @@ const JobPostForm = ({}) => {
                 key={idx}
                 type="text"
                 placeholder={`Question ${idx + 1}`}
-                value={q}
+                value={q.question}
                 readOnly
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2 bg-gray-50"
               />
             ))}
+
             <button
               type="button"
               onClick={handleAddQuestionModal}
@@ -673,16 +753,23 @@ const JobPostForm = ({}) => {
             <div className="flex gap-3 text-center pt-4">
               <button
                 type="button"
-                onClick={(e) => handleSubmit(e, "draft")}
+                onClick={() => handleSubmit("draft")}
                 className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition"
               >
                 Save as Draft
               </button>
-
               <button
                 type="button"
-                onClick={(e) => handleSubmit(e, "active")}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                disabled={!isFormValid()}
+                onClick={() => {
+                  setPendingStatus("active"); // store what we want to do
+                  setConfirmModalOpen(true); // open confirmation modal
+                }}
+                className={`px-6 py-2 rounded-lg text-white transition ${
+                  isFormValid()
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-blue-300 cursor-not-allowed"
+                }`}
               >
                 Post Job
               </button>
@@ -691,8 +778,80 @@ const JobPostForm = ({}) => {
         </form>
       </div>
       {isModalOpen && (
-        <AddQuestionModal onClose={() => setIsModalOpen(false)} />
+        <AddQuestionModal
+          onClose={() => setIsModalOpen(false)}
+          onSave={(newQuestions) => {
+            setQuestions(newQuestions);
+            setIsModalOpen(false);
+          }}
+        />
       )}
+      {/* Confirm Post Modal */}
+      <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Job Posting</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to post this job? Please review all details
+              before proceeding.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isPosting}
+              onClick={async () => {
+                try {
+                  setIsPosting(true);
+                  await handleSubmit(pendingStatus);
+                  setConfirmModalOpen(false);
+                  setSuccessModalOpen(true);
+
+                  // redirect after 1.5 sec
+                  setTimeout(() => {
+                    navigate("/jobposting");
+                  }, 1500);
+                } finally {
+                  setIsPosting(false);
+                }
+              }}
+              className="flex items-center gap-2"
+            >
+              {isPosting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isPosting ? "Posting..." : "Yes, Post Job"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Success Modal */}
+      <Dialog open={successModalOpen} onOpenChange={setSuccessModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Job Posted Successfully 🎉</DialogTitle>
+            <DialogDescription>
+              Your job has been posted successfully and is now live.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex justify-end">
+          <Button
+  onClick={() => {
+    setSuccessModalOpen(false);
+    navigate("/jobposting");
+  }}
+>
+  Go to Job List
+</Button>
+
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
