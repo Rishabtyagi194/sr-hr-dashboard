@@ -1,64 +1,62 @@
-import React, { useState, useRef, useEffect } from "react";
-import { CgProfile } from "react-icons/cg";
-import { FaBell } from "react-icons/fa";
+import React from "react";
+import { Bell, LogOut, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 export const Navbar = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleLogout = () => {
-    // ✅ Clear token and user info
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    // Close dropdown and redirect to login page
-    setDropdownOpen(false);
     navigate("/");
   };
 
   return (
-    <div className="bg-white py-6 px-6 border-b border-gray-200 shadow-md">
-      <div className="flex items-center justify-end gap-4 relative">
-        <a
-          href="/my-uploads"
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Uploads
-        </a>
+    <header className="flex h-16 items-center justify-end gap-4 border-b bg-background px-6">
+      {/* Upload Button */}
+      <Button
+        variant="default"
+        className="flex items-center gap-2"
+        onClick={() => navigate("/my-uploads")}
+      >
+        <Upload className="h-4 w-4" />
+        Uploads
+      </Button>
 
-        <FaBell className="w-6 h-6 text-gray-700 cursor-pointer hover:text-blue-600 transition" />
+      {/* Bell Icon */}
+      <Button variant="ghost" size="icon">
+        <Bell className="h-5 w-5" />
+      </Button>
 
-        <div className="relative" ref={dropdownRef}>
-          <CgProfile
-            className="w-8 h-8 text-gray-700 cursor-pointer hover:text-blue-600 transition"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-          />
+      {/* Profile Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Avatar className="cursor-pointer">
+            <AvatarFallback className="bg-muted text-sm font-medium">
+              U
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
 
-          {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-10">
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-              >
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </header>
   );
 };
