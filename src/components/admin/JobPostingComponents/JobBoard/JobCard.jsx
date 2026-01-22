@@ -96,12 +96,17 @@ export const JobCard = ({ job, onDelete, type = "job" }) => {
       >
         {/* Stats */}
         <div className="flex gap-6 text-center">
-          <div>
-            <p className="text-blue-600 font-bold">
-              {job?.totalResponses || 0}
-            </p>
-            <p className="text-xs text-gray-500">Responses</p>
-          </div>
+        <div
+      className="cursor-pointer"
+      onClick={() =>
+        navigate(`/hiring/${job?.job_id}/applies?tab=n`)
+      }
+    >
+      <p className="text-blue-600 font-bold">
+        {job?.totalResponses || 0}
+      </p>
+      <p className="text-xs text-gray-500">Responses</p>
+    </div>
           <div>
             <p className="font-bold text-gray-800">
               {job?.shortlisted || 0}

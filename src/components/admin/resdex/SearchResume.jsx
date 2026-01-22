@@ -101,7 +101,7 @@ export const SearchResume = () => {
       <h1 className="text-2xl font-bold mb-6">Search Resume</h1>
 
       <div className="relative w-full sm:w-[500px]">
-        <div className="flex items-center gap-4 flex-wrap border border-gray-300 rounded-lg p-2">
+        <div className="flex items-center gap-4 flex-wrap border border-gray-300 rounded-lg p-2 w-fit">
           {keywords.map((keyword, index) => (
             <span
               key={index}

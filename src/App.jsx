@@ -26,6 +26,9 @@ import JobDetails from "./components/admin/JobPostingComponents/JobBoard/JobDeta
 import { AppSidebar } from "./components/admin/global/AppSidebar";
 
 import { SidebarProvider } from "@/components/ui/sidebar"; // ✅ IMPORTANT
+import JobAppliesPage from "./components/admin/JobApplies/JobAppliesPage";
+import ForgotPassword from "./pages/admin/ForgotPassword";
+import { UplodedResume } from "./components/admin/uploded-resume/UplodedResume";
 
 function Layout() {
   const location = useLocation();
@@ -34,6 +37,7 @@ function Layout() {
 
   const hideSidebar =
     location.pathname === "/" ||
+    location.pathname === "/forgot-password" ||
     location.pathname === "/employeeresgistration" ||
     location.pathname === "/resdex/resume-search" ||
     location.pathname.startsWith("/resdex/resume-search/");
@@ -55,6 +59,8 @@ function Layout() {
               <Routes>
                 {/* ---------------- PUBLIC ROUTES ---------------- */}
                 <Route path="/" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+
                 <Route
                   path="/employeeresgistration"
                   element={<EmployerRegistration />}
@@ -89,6 +95,11 @@ function Layout() {
                 />
 
                 <Route
+                  path="/hiring/:jobId/applies"
+                  element={<JobAppliesPage />}
+                />
+
+                <Route
                   path="/jobposting/editjob/:id"
                   element={
                     <ProtectedRoute>
@@ -96,6 +107,16 @@ function Layout() {
                     </ProtectedRoute>
                   }
                 />
+
+<Route
+                  path="/consultant-uploded-resume"
+                  element={
+                    <ProtectedRoute>
+                      <UplodedResume />
+                    </ProtectedRoute>
+                  }
+                />
+               
 
                 {/* ---------------- RESDEX ---------------- */}
                 <Route
@@ -189,7 +210,6 @@ function Layout() {
     </SidebarProvider>
   );
 }
-
 
 function App() {
   return (
