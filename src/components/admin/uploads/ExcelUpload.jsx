@@ -30,7 +30,7 @@ const ExcelUpload = () => {
 
     try {
       setUploading(true);
-      const response = await fetch("http://147.93.72.227:5000/api/upload", {
+      const response = await fetch("http://147.93.72.227:5000/api/excel/upload", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -54,7 +54,7 @@ const ExcelUpload = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
+    <div className=" flex flex-col items-center py-20 px-4 ">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">
         Upload Excel and Display Data
       </h2>

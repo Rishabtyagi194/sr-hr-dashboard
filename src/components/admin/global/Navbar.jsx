@@ -1,21 +1,62 @@
 import React from "react";
-import { CgProfile } from "react-icons/cg";
-import { FaBell } from "react-icons/fa";
+import { Bell, LogOut, Upload } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export const Navbar = () => {
-  return (
-    <div className=" bg-white   py-6 px-6 border-b  border-gray-200 shadow-md  ">
-      <div className="flex items-end justify-end gap-4 cursor-pointer  ">
-        <a
-          href="/my-archive"
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Upload CV
-        </a>
+  const navigate = useNavigate();
 
-        <FaBell className="w-8 h-6" />
-        <CgProfile className="w-8 h-6" />
-      </div>
-    </div>
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
+  return (
+    <header className="flex h-16 items-center justify-end gap-4 border-b bg-background px-6">
+      {/* Upload Button */}
+      <Button
+        variant="default"
+        className="flex items-center gap-2"
+        onClick={() => navigate("/my-uploads")}
+      >
+        <Upload className="h-4 w-4" />
+        Uploads
+      </Button>
+
+      {/* Bell Icon */}
+      <Button variant="ghost" size="icon">
+        <Bell className="h-5 w-5" />
+      </Button>
+
+      {/* Profile Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Avatar className="cursor-pointer">
+            <AvatarFallback className="bg-muted text-sm font-medium">
+              U
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </header>
   );
 };

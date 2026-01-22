@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
-export default function AddQuestionModal({ onClose }) {
+export default function AddQuestionModal({ onClose, onSave }) {
   const [questions, setQuestions] = useState([
     {
       id: Date.now(),
@@ -25,7 +25,12 @@ export default function AddQuestionModal({ onClose }) {
     setQuestions((prev) =>
       prev.map((q) =>
         q.id === id
-          ? { ...q, options: q.options.map((opt, i) => (i === index ? value : opt)) }
+          ? {
+              ...q,
+              options: q.options.map((opt, i) =>
+                i === index ? value : opt
+              ),
+            }
           : q
       )
     );
@@ -72,16 +77,27 @@ export default function AddQuestionModal({ onClose }) {
     setQuestions((prev) => prev.filter((q) => q.id !== id));
   };
 
-  // Final submit
+  // ✅ FINAL SUBMIT – SEND TO PARENT
   const handleSubmit = () => {
-    console.log("Questions data:", questions);
-    alert("Check console for output");
+    const formatted = questions.map((q) => ({
+      question: q.text,
+      type:
+        q.type === "Single choice"
+          ? "single_choice"
+          : q.type === "Multiple choice"
+          ? "multiple_choice"
+          : "short_answer",
+      mandatory: q.mandatory,
+      options: q.type === "Short answer" ? [] : q.options,
+    }));
+
+    onSave(formatted); // 🔥 SEND TO PARENT
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div className="relative w-full max-w-3xl mx-auto border rounded-lg shadow-md p-5 bg-white">
-        {/* Modal Header */}
+        {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Add questions</h2>
           <button
@@ -117,21 +133,20 @@ export default function AddQuestionModal({ onClose }) {
                 type="text"
                 placeholder="Enter your question here"
                 value={q.text}
-                onChange={(e) => handleChange(q.id, "text", e.target.value)}
-                className={`w-full border rounded px-3 py-2 ${
-                  q.text === "" ? "border-red-500" : "border-gray-300"
-                }`}
+                onChange={(e) =>
+                  handleChange(q.id, "text", e.target.value)
+                }
+                className="w-full border rounded px-3 py-2 border-gray-300"
               />
-              {q.text === "" && (
-                <p className="text-xs text-red-500 mt-1">Field can’t be empty</p>
-              )}
 
               {/* Mandatory */}
               <div className="flex items-center mt-2">
                 <input
                   type="checkbox"
                   checked={q.mandatory}
-                  onChange={(e) => handleChange(q.id, "mandatory", e.target.checked)}
+                  onChange={(e) =>
+                    handleChange(q.id, "mandatory", e.target.checked)
+                  }
                   className="mr-2"
                 />
                 <span className="text-sm">Mandatory</span>
@@ -205,9 +220,6 @@ export default function AddQuestionModal({ onClose }) {
 
         {/* Actions */}
         <div className="flex justify-end space-x-3">
-          <button className="px-3 py-1 border rounded text-sm">
-            Save as template
-          </button>
           <button
             onClick={handleSubmit}
             className="px-4 py-1 bg-blue-600 text-white rounded text-sm"

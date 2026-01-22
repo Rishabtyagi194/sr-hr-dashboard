@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
-export const InternshipDescription = () => {
-  const [description, setDescription] = useState("");
+export const InternshipDescription = ({ setDescription }) => {
+  const [description, setdescription] = useState("");
+
+
+  useEffect(() => {
+    setDescription(description);
+  }, [description]);
+  
 
   // Handle JD File Upload (reads .txt or .docx)
   const handleFileUpload = (e) => {
@@ -12,7 +18,7 @@ export const InternshipDescription = () => {
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      setDescription(event.target.result); // populate editor with text
+      setdescription(event.target.result); // populate editor with text
     };
 
     // For .txt files
@@ -30,7 +36,7 @@ export const InternshipDescription = () => {
         import("mammoth").then((mammoth) => {
           mammoth
             .extractRawText({ arrayBuffer: event.target.result })
-            .then((result) => setDescription(result.value));
+            .then((result) => setdescription(result.value));
         });
       };
     }
@@ -66,7 +72,7 @@ export const InternshipDescription = () => {
           data={description}
           onChange={(event, editor) => {
             const data = editor.getData();
-            setDescription(data);
+            setdescription(data);
           }}
         />
       </div>

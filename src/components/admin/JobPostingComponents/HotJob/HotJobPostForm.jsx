@@ -1,7 +1,18 @@
 import React, { useState } from "react";
 import AddQuestionModal from "./AddQuestionModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
-const JobPostForm = () => {
+const JobPostForm = ({}) => {
   const [jobTitle, setJobTitle] = useState("");
   const [employmentType, setEmploymentType] = useState("Full Time, Permanent");
   const [skills, setSkills] = useState([]);
@@ -17,6 +28,55 @@ const JobPostForm = () => {
   const [venue, setVenue] = useState("");
   const [googleMapsUrl, setGoogleMapsUrl] = useState("");
   const [questions, setQuestions] = useState([]);
+  const [isConsultantJobActive, setIsConsultantJobActive] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(null); // "active" or "draft"
+  const [isPosting, setIsPosting] = useState(false);
+  const navigate = useNavigate();
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!jobTitle.trim()) newErrors.jobTitle = "Job title is required";
+    if (keyskills.length === 0)
+      newErrors.keyskills = "At least one key skill is required";
+    if (!companyIndustry)
+      newErrors.companyIndustry = "Company industry is required";
+    if (!workMode) newErrors.workMode = "Work mode is required";
+    if (locations.length === 0)
+      newErrors.locations = "At least one location is required";
+    if (!expFrom || !expTo)
+      newErrors.experience = "Experience range is required";
+    if (!salaryFrom || !salaryTo) newErrors.salary = "Salary range is required";
+    if (education.length === 0)
+      newErrors.education = "At least one education is required";
+    if (!jobDescription.trim())
+      newErrors.jobDescription = "Job description is required";
+    if (!aboutcompany.trim())
+      newErrors.aboutcompany = "About company is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const isFormValid = () => {
+    return (
+      jobTitle.trim() &&
+      keyskills.length > 0 &&
+      companyIndustry &&
+      workMode &&
+      locations.length > 0 &&
+      expFrom &&
+      expTo &&
+      salaryFrom &&
+      salaryTo &&
+      education.length > 0 &&
+      jobDescription.trim() &&
+      aboutcompany.trim()
+    );
+  };
 
   const formatTime = (time) => {
     if (!time) return "";
@@ -45,22 +105,20 @@ const JobPostForm = () => {
   const [education, setEducation] = useState([]);
   const [newEducation, setNewEducation] = useState("");
 
-
-
   const [keyskills, setkeyskills] = useState([]); // initialize as array
-const [newkeyskills, setNewkeyskills] = useState(""); // initialize as string
+  const [newkeyskills, setNewkeyskills] = useState(""); // initialize as string
 
-// Handler
-const handleAddKeySkills = () => {
-  if (newkeyskills && !keyskills.includes(newkeyskills)) {
-    setkeyskills([...keyskills, newkeyskills]);
-    setNewkeyskills("");
-  }
-};
+  // Handler
+  const handleAddKeySkills = () => {
+    if (newkeyskills && !keyskills.includes(newkeyskills)) {
+      setkeyskills([...keyskills, newkeyskills]);
+      setNewkeyskills("");
+    }
+  };
 
-const handleRemoveKeySkill = (skill) => {
-  setkeyskills(keyskills.filter((s) => s !== skill));
-};
+  const handleRemoveKeySkill = (skill) => {
+    setkeyskills(keyskills.filter((s) => s !== skill));
+  };
 
   // Handlers
   const handleAddSkill = (e) => {
@@ -116,46 +174,119 @@ const handleRemoveKeySkill = (skill) => {
     setIsModalOpen(false); // close modal
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleDeleteJob = async (jobId) => {
+    if (!jobId) {
+      alert("Job ID not found!");
+      return;
+    }
+
+    if (!window.confirm("Are you sure you want to delete this job?")) return;
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        `http://147.93.72.227:5000/api/jobs/delete/${jobId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log("Delete Response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete job");
+      }
+
+      alert("Job deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting job:", error);
+      alert("Error deleting job: " + error.message);
+    }
+  };
+
+  const handleSubmit = async (status) => {
+    // e.preventDefault();
+
+    if (!validateForm()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     const payload = {
       jobTitle,
       employmentType,
+      skills: keyskills,
+      CompanyIndustry: companyIndustry || "Information Technology",
       workMode,
-      jobLocation: locations,
+      jobLocation: {
+        city: locations[0] || "Mumbai",
+        state: "Maharashtra",
+        country: "India",
+      },
+      willingToRelocate: relocate,
       locality,
-      experinceFrom: expFrom,
-      experinceTo: expTo,
-      salaryRangeFrom: salaryFrom.replace(/\D/g, ""), 
-      salaryRangeTo: salaryTo.replace(/\D/g, ""),
+      experinceFrom: expFrom.toString(),
+      experinceTo: expTo.toString(),
+      salaryRangeFrom: salaryFrom.toString(),
+      salaryRangeTo: salaryTo.toString(),
       qualification: education,
       jobDescription,
-      questions,
+      AboutCompany: aboutcompany,
+      include_walk_in_details: includeWalkin,
+      walk_in_start_date: includeWalkin ? walkinDate : null,
+      walk_in_start_time: includeWalkin ? walkinTime?.start || "2/10/2002" : "",
+      walk_in_end_time: includeWalkin ? walkinTime?.end || "" : "",
+      contact_person: includeWalkin ? contactPerson : "",
+      venue: includeWalkin ? venue : "",
+      google_maps_url: includeWalkin ? googleMapsUrl : "",
+      duration_days: includeWalkin ? Number(walkinDuration) : 0,
+      contact_number: includeWalkin ? contactNumber : "",
+      // questions: questions.map((q) => ({
+      //   question: q.question || q,
+      //   type: q.type || "short_answer",
+      //   mandatory: q.mandatory || false,
+      //   options: q.options || [],
+      //   validation: q.validation || "",
+      // })),
+      questions: questions,
+      Status: status,
+      is_consultant_Job_Active: isConsultantJobActive,
     };
 
-    const token = localStorage.getItem("token"); 
+    const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://147.93.72.227:5000/api/jobs/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "http://147.93.72.227:5000/api/jobs/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
+      console.log("Response:", data);
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to create job");
       }
 
-      console.log("✅ Job created successfully:", data);
+  
     } catch (error) {
       console.error("Error creating job:", error);
+      // alert("Error creating job: " + error.message);
     }
   };
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
@@ -194,51 +325,51 @@ const handleRemoveKeySkill = (skill) => {
           </div>
 
           <div>
-  <label className="block text-sm font-medium mb-2">
-    Key skills <span className="text-red-500">*</span>
-  </label>
-  <div className="flex flex-wrap gap-2 mb-2">
-    {keyskills.map((skill, idx) => (
-      <span
-        key={idx}
-        className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
-      >
-        {skill}
-        <button
-          type="button"
-          onClick={() => handleRemoveKeySkill(skill)}
-          className="text-red-500"
-        >
-          ✕
-        </button>
-      </span>
-    ))}
-  </div>
-  <div className="flex gap-2">
-    <input
-      type="text"
-      placeholder="Add skills that are crucial for the job"
-      value={newkeyskills}
-      onChange={(e) => setNewkeyskills(e.target.value)}
-      className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
-    />
-    <button
-      type="button"
-      onClick={handleAddKeySkills}
-      className="bg-blue-600 text-white px-4 rounded-lg"
-    >
-      Add
-    </button>
-  </div>
-</div>
+            <label className="block text-sm font-medium mb-2">
+              Key skills <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {keyskills.map((skill, idx) => (
+                <span
+                  key={idx}
+                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
+                >
+                  {skill}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveKeySkill(skill)}
+                    className="text-red-500"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Add skills that are crucial for the job"
+                value={newkeyskills}
+                onChange={(e) => setNewkeyskills(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
+              />
+              <button
+                type="button"
+                onClick={handleAddKeySkills}
+                className="bg-blue-600 text-white px-4 rounded-lg"
+              >
+                Add
+              </button>
+            </div>
+          </div>
 
           <div>
             <label className="block text-sm font-medium mb-2">
               Company industry <span className="text-red-500">*</span>
             </label>
             <select
-              value={employmentType}
-              onChange={(e) => setEmploymentType(e.target.value)}
+              value={companyIndustry}
+              onChange={(e) => setCompanyIndustry(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2"
             >
               <option>Others</option>
@@ -581,6 +712,17 @@ const handleRemoveKeySkill = (skill) => {
             )}
           </div>
 
+          <label className="flex items-center gap-2 mt-2">
+            <input
+              type="checkbox"
+              checked={isConsultantJobActive}
+              onChange={(e) => setIsConsultantJobActive(e.target.checked)}
+            />
+            <span className="text-sm text-gray-600">
+              Vacancy should be visible to consultancy?
+            </span>
+          </label>
+
           {/* Questions */}
           <div className="col-span-2">
             <label className="block text-sm mb-2">
@@ -591,11 +733,12 @@ const handleRemoveKeySkill = (skill) => {
                 key={idx}
                 type="text"
                 placeholder={`Question ${idx + 1}`}
-                value={q}
+                value={q.question}
                 readOnly
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2 bg-gray-50"
               />
             ))}
+
             <button
               type="button"
               onClick={handleAddQuestionModal}
@@ -606,19 +749,109 @@ const handleRemoveKeySkill = (skill) => {
           </div>
 
           {/* Submit */}
-          <div className="text-center pt-4">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-            >
-              Post Job
-            </button>
+          <div className="flex gap-3 text-center pt-4">
+            <div className="flex gap-3 text-center pt-4">
+              <button
+                type="button"
+                onClick={() => handleSubmit("draft")}
+                className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition"
+              >
+                Save as Draft
+              </button>
+              <button
+                type="button"
+                disabled={!isFormValid()}
+                onClick={() => {
+                  setPendingStatus("active"); // store what we want to do
+                  setConfirmModalOpen(true); // open confirmation modal
+                }}
+                className={`px-6 py-2 rounded-lg text-white transition ${
+                  isFormValid()
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-blue-300 cursor-not-allowed"
+                }`}
+              >
+                Post Job
+              </button>
+            </div>
           </div>
         </form>
       </div>
       {isModalOpen && (
-        <AddQuestionModal onClose={() => setIsModalOpen(false)} />
+        <AddQuestionModal
+          onClose={() => setIsModalOpen(false)}
+          onSave={(newQuestions) => {
+            setQuestions(newQuestions);
+            setIsModalOpen(false);
+          }}
+        />
       )}
+      {/* Confirm Post Modal */}
+      <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Job Posting</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to post this job? Please review all details
+              before proceeding.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isPosting}
+              onClick={async () => {
+                try {
+                  setIsPosting(true);
+                  await handleSubmit(pendingStatus);
+                  setConfirmModalOpen(false);
+                  setSuccessModalOpen(true);
+
+                  // redirect after 1.5 sec
+                  setTimeout(() => {
+                    navigate("/jobposting");
+                  }, 1500);
+                } finally {
+                  setIsPosting(false);
+                }
+              }}
+              className="flex items-center gap-2"
+            >
+              {isPosting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isPosting ? "Posting..." : "Yes, Post Job"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Success Modal */}
+      <Dialog open={successModalOpen} onOpenChange={setSuccessModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Job Posted Successfully 🎉</DialogTitle>
+            <DialogDescription>
+              Your job has been posted successfully and is now live.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex justify-end">
+          <Button
+  onClick={() => {
+    setSuccessModalOpen(false);
+    navigate("/jobposting");
+  }}
+>
+  Go to Job List
+</Button>
+
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

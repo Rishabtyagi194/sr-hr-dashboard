@@ -1,10 +1,12 @@
 import React from 'react'
-import ExcelUpload from './ExcelUpload'
+import DataTableDemo from './DataTableDemo'
+
+
 
 export const MyArchive = () => {
   return (
-    <div>
-      <ExcelUpload />
-    </div>
+  <div>
+    <DataTableDemo />
+  </div>
   )
 }

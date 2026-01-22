@@ -1,51 +1,213 @@
-import './App.css'
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Home from './pages/admin/Home';
-import Sidebar from './components/admin/global/Sidebar';
-import Login from './pages/admin/Login';
-import { JobPosting } from './pages/admin/JobPosting';
-import { CreateUser } from './pages/admin/CreateUser';
-import { AllUser } from './pages/admin/AllUser';
-import { SubNavbar } from './components/admin/global/SubNavbar';
-import { Navbar } from './components/admin/global/Navbar';
-import EditJobPage from './components/admin/JobPostingComponents/EditJobModal';
-import EmployerRegistration from './pages/admin/EmployeeRegistration';
-import { Hotvacancy } from './components/admin/JobPostingComponents/HotJob/Hotvacancy';
-import { InternshipJob } from './components/admin/JobPostingComponents/Internship/InternshipJob';
-import { SearchResume } from './components/admin/resdex/SearchResume';
-import { MyArchive } from './components/admin/myArchive/MyArchive';
+import "./App.css";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+
+import Home from "./pages/admin/Home";
+import Login from "./pages/admin/Login";
+import { JobPosting } from "./pages/admin/JobPosting";
+import { CreateUser } from "./pages/admin/CreateUser";
+import { AllUser } from "./pages/admin/AllUser";
+import { Navbar } from "./components/admin/global/Navbar";
+import EditJobPage from "./components/admin/JobPostingComponents/JobBoard/EditJobModal";
+import EmployerRegistration from "./pages/admin/EmployeeRegistration";
+import { Hotvacancy } from "./components/admin/JobPostingComponents/HotJob/Hotvacancy";
+import { MyArchive } from "./components/admin/myArchive/MyArchive";
+import ProtectedRoute from "./components/admin/global/ProtectedRoute";
+import InternshipJob from "./components/admin/JobPostingComponents/Internship/InternshipJob";
+import AllUploads from "./components/admin/uploads/AllUploads";
+import Resdex from "./components/admin/resdex/Resdex";
+import CandidateProfilePage from "./components/admin/resdex/CandidateProfile";
+import ResdexNavbar from "./components/admin/global/ResdexNavbar";
+import JobDetails from "./components/admin/JobPostingComponents/JobBoard/JobDetailsById";
+import { AppSidebar } from "./components/admin/global/AppSidebar";
+
+import { SidebarProvider } from "@/components/ui/sidebar"; // ✅ IMPORTANT
+import JobAppliesPage from "./components/admin/JobApplies/JobAppliesPage";
+import ForgotPassword from "./pages/admin/ForgotPassword";
+import { UplodedResume } from "./components/admin/uploded-resume/UplodedResume";
 
 function Layout() {
   const location = useLocation();
 
-  // Hide sidebar on login and employer registration pages
+  const isResdexRoute = location.pathname.startsWith("/resdex");
+
   const hideSidebar =
-    location.pathname === "/" || location.pathname === "/employeeresgistration";
+    location.pathname === "/" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname === "/employeeresgistration" ||
+    location.pathname === "/resdex/resume-search" ||
+    location.pathname.startsWith("/resdex/resume-search/");
 
   return (
-    <div className="flex">
-      {!hideSidebar && <Sidebar />}
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full overflow-x-hidden bg-gray-100">
+        {/* Sidebar */}
+        {!hideSidebar && <AppSidebar />}
 
-      <div className={`flex-1 ${!hideSidebar ? "ml-64" : ""} bg-gray-100 min-h-screen`}>
-        {!hideSidebar && <Navbar />}
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/employeeresgistration" element={<EmployerRegistration />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/jobposting" element={<JobPosting />} />
-          <Route path="/jobposting/jobs/:id" element={<EditJobPage />} />
-          <Route path="/resdex" element={<SubNavbar />} />
-          <Route path="/createuser" element={<CreateUser />} />
-          <Route path="/users" element={<AllUser />} />
-          <Route path='/jobposting/hotvacancy' element={<Hotvacancy />} />
-          <Route path='/jobposting/internship' element={<InternshipJob />} />
-          <Route path='/resdex/resume-search' element={<SearchResume />} />
+        {/* Main Content */}
+        <div className="flex flex-col flex-1 w-full overflow-x-hidden">
+          {/* Navbar */}
+          {isResdexRoute ? <ResdexNavbar /> : <Navbar />}
 
-          <Route path='/my-archive' element={<MyArchive />} />
-          
-        </Routes>
+          {/* PAGE CONTENT */}
+          <main className="flex-1 w-full overflow-x-hidden px-6 py-4">
+            <div className="w-full min-w-0">
+              <Routes>
+                {/* ---------------- PUBLIC ROUTES ---------------- */}
+                <Route path="/" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+
+                <Route
+                  path="/employeeresgistration"
+                  element={<EmployerRegistration />}
+                />
+
+                {/* ---------------- PROTECTED ROUTES ---------------- */}
+                <Route
+                  path="/home"
+                  element={
+                    <ProtectedRoute>
+                      <Home />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/jobposting"
+                  element={
+                    <ProtectedRoute>
+                      <JobPosting />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/jobposting/:id"
+                  element={
+                    <ProtectedRoute>
+                      <JobDetails />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/hiring/:jobId/applies"
+                  element={<JobAppliesPage />}
+                />
+
+                <Route
+                  path="/jobposting/editjob/:id"
+                  element={
+                    <ProtectedRoute>
+                      <EditJobPage />
+                    </ProtectedRoute>
+                  }
+                />
+
+<Route
+                  path="/consultant-uploded-resume"
+                  element={
+                    <ProtectedRoute>
+                      <UplodedResume />
+                    </ProtectedRoute>
+                  }
+                />
+               
+
+                {/* ---------------- RESDEX ---------------- */}
+                <Route
+                  path="/resdex"
+                  element={
+                    <ProtectedRoute>
+                      <Resdex />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/resdex/resume-search"
+                  element={
+                    <ProtectedRoute>
+                      <Resdex />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/resdex/resume-search/:id"
+                  element={
+                    <ProtectedRoute>
+                      <CandidateProfilePage />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* ---------------- USERS ---------------- */}
+                <Route
+                  path="/createuser"
+                  element={
+                    <ProtectedRoute>
+                      <CreateUser />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/users"
+                  element={
+                    <ProtectedRoute>
+                      <AllUser />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* ---------------- JOB TYPES ---------------- */}
+                <Route
+                  path="/jobposting/hotvacancy"
+                  element={
+                    <ProtectedRoute>
+                      <Hotvacancy />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/jobposting/internship"
+                  element={
+                    <ProtectedRoute>
+                      <InternshipJob />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* ---------------- UPLOADS & ARCHIVE ---------------- */}
+                <Route
+                  path="/my-uploads"
+                  element={
+                    <ProtectedRoute>
+                      <AllUploads />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/my-archive"
+                  element={
+                    <ProtectedRoute>
+                      <MyArchive />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
 
