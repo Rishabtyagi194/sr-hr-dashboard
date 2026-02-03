@@ -25,19 +25,29 @@ import ResdexNavbar from "./components/admin/global/ResdexNavbar";
 import JobDetails from "./components/admin/JobPostingComponents/JobBoard/JobDetailsById";
 import { AppSidebar } from "./components/admin/global/AppSidebar";
 
-import { SidebarProvider } from "@/components/ui/sidebar"; // ✅ IMPORTANT
+import { SidebarProvider } from "@/components/ui/sidebar";
 import JobAppliesPage from "./components/admin/JobApplies/JobAppliesPage";
 import ForgotPassword from "./pages/admin/ForgotPassword";
 import { UplodedResume } from "./components/admin/uploded-resume/UplodedResume";
+import VerifyOtp from "./components/admin/global/verify";
+import ResumeUploadedByConsultant from "./components/admin/uploded-resume/ResumeUploadByConsultant";
 
 function Layout() {
   const location = useLocation();
 
   const isResdexRoute = location.pathname.startsWith("/resdex");
 
+  /* ---------- AUTH / PUBLIC PAGES ---------- */
+  const hideNavbar =
+    location.pathname === "/" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname === "/verify" ||
+    location.pathname === "/employeeresgistration";
+
   const hideSidebar =
     location.pathname === "/" ||
     location.pathname === "/forgot-password" ||
+    location.pathname === "/verify" ||
     location.pathname === "/employeeresgistration" ||
     location.pathname === "/resdex/resume-search" ||
     location.pathname.startsWith("/resdex/resume-search/");
@@ -51,22 +61,23 @@ function Layout() {
         {/* Main Content */}
         <div className="flex flex-col flex-1 w-full overflow-x-hidden">
           {/* Navbar */}
-          {isResdexRoute ? <ResdexNavbar /> : <Navbar />}
+          {!hideNavbar &&
+            (isResdexRoute ? <ResdexNavbar /> : <Navbar />)}
 
           {/* PAGE CONTENT */}
           <main className="flex-1 w-full overflow-x-hidden px-6 py-4">
             <div className="w-full min-w-0">
               <Routes>
-                {/* ---------------- PUBLIC ROUTES ---------------- */}
+                {/* ---------- PUBLIC ROUTES ---------- */}
                 <Route path="/" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-
+                <Route path="/verify" element={<VerifyOtp />} />
                 <Route
                   path="/employeeresgistration"
                   element={<EmployerRegistration />}
                 />
 
-                {/* ---------------- PROTECTED ROUTES ---------------- */}
+                {/* ---------- PROTECTED ROUTES ---------- */}
                 <Route
                   path="/home"
                   element={
@@ -108,17 +119,25 @@ function Layout() {
                   }
                 />
 
-<Route
-                  path="/consultant-uploded-resume"
+                <Route
+                  path="/consultant-profile-resume"
                   element={
                     <ProtectedRoute>
                       <UplodedResume />
                     </ProtectedRoute>
                   }
                 />
-               
 
-                {/* ---------------- RESDEX ---------------- */}
+                <Route
+                  path="/consultant-uploded-resume"
+                  element={
+                    <ProtectedRoute>
+                      <ResumeUploadedByConsultant />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* ---------- RESDEX ---------- */}
                 <Route
                   path="/resdex"
                   element={
@@ -146,7 +165,7 @@ function Layout() {
                   }
                 />
 
-                {/* ---------------- USERS ---------------- */}
+                {/* ---------- USERS ---------- */}
                 <Route
                   path="/createuser"
                   element={
@@ -165,7 +184,7 @@ function Layout() {
                   }
                 />
 
-                {/* ---------------- JOB TYPES ---------------- */}
+                {/* ---------- JOB TYPES ---------- */}
                 <Route
                   path="/jobposting/hotvacancy"
                   element={
@@ -184,7 +203,7 @@ function Layout() {
                   }
                 />
 
-                {/* ---------------- UPLOADS & ARCHIVE ---------------- */}
+                {/* ---------- UPLOADS & ARCHIVE ---------- */}
                 <Route
                   path="/my-uploads"
                   element={
