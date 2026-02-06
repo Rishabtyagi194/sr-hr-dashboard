@@ -29,7 +29,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import JobAppliesPage from "./components/admin/JobApplies/JobAppliesPage";
 import ForgotPassword from "./pages/admin/ForgotPassword";
 import { UplodedResume } from "./components/admin/uploded-resume/UplodedResume";
-import VerifyOtp from "./components/admin/global/verify.jsx";
+import VerifyOtp from "./components/admin/global/verify";
 import ResumeUploadedByConsultant from "./components/admin/uploded-resume/ResumeUploadByConsultant";
 
 function Layout() {
