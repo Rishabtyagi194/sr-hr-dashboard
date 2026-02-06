@@ -55,7 +55,7 @@ export const UplodedResume = () => {
         if (!token) return;
 
         const res = await fetch(
-          "http://147.93.72.227:5000/api/jobs/applications/consultant/all/submitted-resume",
+          "https://qa.api.rozgardwar.cloud/api/jobs/applications/consultant/all/submitted-resume",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ export const UplodedResume = () => {
       if (!token) throw new Error("Unauthorized");
 
       const res = await fetch(
-        "http://147.93.72.227:5000/api/consultant/resume/status",
+        "https://qa.api.rozgardwar.cloud/api/consultant/resume/status",
         {
           method: "PATCH",
           headers: {

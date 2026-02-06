@@ -11,7 +11,7 @@ export const NewUserForm = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const API_URL = "http://147.93.72.227:5000/api/employer/staff/create";
+  const API_URL = "https://qa.api.rozgardwar.cloud/api/employer/staff/create";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

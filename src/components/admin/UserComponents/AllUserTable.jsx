@@ -22,7 +22,7 @@ export const AllUsersTable = () => {
         return;
       }
 
-      const response = await fetch("http://147.93.72.227:5000/api/employer/staff/all", {
+      const response = await fetch("https://qa.api.rozgardwar.cloud/api/employer/staff/all", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export const AllUsersTable = () => {
         return;
       }
 
-      const response = await fetch(`http://147.93.72.227:5000/api/employer/user/${id}`, {
+      const response = await fetch(`https://qa.api.rozgardwar.cloud/api/employer/user/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ export const AllUsersTable = () => {
 
       // API call (PUT or PATCH)
       const response = await fetch(
-        `http://147.93.72.227:5000/api/employer/user/${editingUser._id}`,
+        `https://qa.api.rozgardwar.cloud/api/employer/user/${editingUser._id}`,
         {
           method: "PUT",
           headers: {

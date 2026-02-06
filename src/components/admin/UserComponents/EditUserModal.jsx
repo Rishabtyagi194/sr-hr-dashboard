@@ -32,7 +32,7 @@ const EditUserModal = ({ user, onClose, onSave }) => {
       // Get token from localStorage
       const token = localStorage.getItem("token"); // adjust key if needed
   
-      const response = await fetch(`http://147.93.72.227:5000/api/employer/user/${user.id}`, {
+      const response = await fetch(`https://qa.api.rozgardwar.cloud/api/employer/user/${user.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

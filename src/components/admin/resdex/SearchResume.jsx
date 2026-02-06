@@ -33,7 +33,7 @@ export const SearchResume = () => {
   const fetchSuggestions = async (value) => {
     try {
       const res = await axios.get(
-        `http://147.93.72.227:5000/api/search/suggestions?keyword=${value}`,
+        `https://qa.api.rozgardwar.cloud/api/search/suggestions?keyword=${value}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSuggestions(res.data.suggestions || []);
@@ -57,7 +57,7 @@ export const SearchResume = () => {
       setSuggestions([]);
 
       await axios.post(
-        "http://147.93.72.227:5000/api/search/saveKeyword",
+        "https://qa.api.rozgardwar.cloud/api/search/saveKeyword",
         { keyword: trimmed },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -68,7 +68,7 @@ export const SearchResume = () => {
     addKeyword(suggestion);
 
     await axios.post(
-      "http://147.93.72.227:5000/api/search/saveKeyword",
+      "https://qa.api.rozgardwar.cloud/api/search/saveKeyword",
       { keyword: suggestion },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -85,7 +85,7 @@ export const SearchResume = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `http://147.93.72.227:5000/api/search/resume?keyword=${keywords.join(",")}`,
+        `https://qa.api.rozgardwar.cloud/api/search/resume?keyword=${keywords.join(",")}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setResults(res?.data?.resumes);

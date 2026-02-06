@@ -36,7 +36,7 @@ const JobDashboard = () => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://147.93.72.227:5000/api/jobs/employer-jobs",
+        "https://qa.api.rozgardwar.cloud/api/jobs/employer-jobs",
         {
           method: "GET",
           headers: {
@@ -74,7 +74,7 @@ const JobDashboard = () => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://147.93.72.227:5000/api/internship/employer-internships",
+        "https://qa.api.rozgardwar.cloud/api/internship/employer-internships",
         {
           method: "GET",
           headers: {
@@ -119,8 +119,8 @@ const JobDashboard = () => {
 
       const url =
         type === "internship"
-          ? `http://147.93.72.227:5000/api/internship/delete/${id}`
-          : `http://147.93.72.227:5000/api/jobs/delete/${id}`;
+          ? `https://qa.api.rozgardwar.cloud/api/internship/delete/${id}`
+          : `https://qa.api.rozgardwar.cloud/api/jobs/delete/${id}`;
 
       const res = await fetch(url, {
         method: "DELETE",

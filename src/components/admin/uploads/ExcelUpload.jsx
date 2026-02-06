@@ -30,7 +30,7 @@ const ExcelUpload = () => {
 
     try {
       setUploading(true);
-      const response = await fetch("http://147.93.72.227:5000/api/excel/upload", {
+      const response = await fetch("https://qa.api.rozgardwar.cloud/api/excel/upload", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
