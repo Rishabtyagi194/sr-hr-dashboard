@@ -1,3 +1,5 @@
+name: Deploy React (Vite) App to VPS
+
 on:
   push:
     branches:
@@ -9,21 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      #  Checkout repository 
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      #  Setup Node.js 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20 
 
+      #  Install dependencies 
       - name: Install Dependencies
         run: npm install
 
-      - name: Build React App
+      #  Build Vite app 
+      - name: Build Vite App
         run: npm run build
 
-      # Deploy MAIN branch (Production)
+      #  DEBUG (IMPORTANT – keep for now) 
+      - name: Debug build output
+        run: |
+          echo "Root directory:"
+          ls -la
+          echo "Dist directory:"
+          ls -la dist
+
+      #  Deploy MAIN → PROD 
       - name: Deploy MAIN to Production
         if: github.ref == 'refs/heads/main'
         uses: appleboy/scp-action@v0.1.7
@@ -31,11 +45,11 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/*"
+          source: "dist/*"
           target: "/var/www/prod/sr-hr-dashboard"
           strip_components: 1
 
-      # Deploy MUKTI branch (QA / Staging)
+      #  Deploy MUKTI → QA 
       - name: Deploy MUKTI to QA
         if: github.ref == 'refs/heads/mukti'
         uses: appleboy/scp-action@v0.1.7
@@ -43,6 +57,6 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/*"
+          source: "dist/*"
           target: "/var/www/qa/sr-hr-dashboard"
           strip_components: 1
