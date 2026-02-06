@@ -124,7 +124,7 @@ const InternshipJob = () => {
       collabrateWithTeam: responseSettings.collabrateWithTeam || [""],
       receivedResponseOverMail: responseSettings.receivedResponseOverMail || "",
       addResponseCode: responseSettings.referenceCode || "",
-      AboutCompany: details.aboutCompany || "NA",
+      // AboutCompany: details.aboutCompany || "NA",
       Status: status,
     };
 
