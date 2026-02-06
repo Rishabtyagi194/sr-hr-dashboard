@@ -28,40 +28,65 @@ const EmployerRegistration = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://31.97.61.6:5000/api/organization/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          companyData: {
-            name: formData.companyName,
-            industry: formData.industry,
-            size: formData.companySize,
-            website: formData.website,
-            contact_email: formData.employerEmail,
-            contact_phone: formData.companyPhone,
-            address: formData.companyAddress,
-            verified: true,
-            status: "active",
+      const response = await fetch(
+        "http://147.93.72.227:5000/api/organization/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-          userData: {
-            name: formData.employerName,
-            email: formData.employerEmail,
-            password: formData.password,
-            phone: formData.employerPhone,
-            role: "employer_admin",
-            permissions: null,
-            is_active: true,
-          },
-        }),
-      });
+          body: JSON.stringify({
+            organisationData: {
+              name: formData.companyName,
+              industry: formData.industry,
+              size: formData.companySize,
+              website: formData.website,
+              contact_email: formData.employerEmail,
+              contact_phone: formData.companyPhone,
+              address: formData.companyAddress,
+              verified: true,
+              status: "active",
+            },
+            userData: {
+              name: formData.employerName,
+              email: formData.employerEmail,
+              password: formData.password,
+              phone: formData.employerPhone,
+              role: "employer_admin",
+              permissions: null,
+              is_active: true,
+            },
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
       }
+
+      // ✅ STORE DATA IN SESSION STORAGE (ONLY CHANGE)
+      sessionStorage.setItem(
+        "employerRegistration",
+        JSON.stringify({
+          companyName: formData.companyName,
+          industry: formData.industry,
+          companySize: formData.companySize,
+          website: formData.website,
+          companyPhone: formData.companyPhone,
+          companyAddress: formData.companyAddress,
+          employerName: formData.employerName,
+          employerEmail: formData.employerEmail,
+          employerPhone: formData.employerPhone,
+        })
+      );
+
+      // Frequently used fields (UNCHANGED KEYS)
+      sessionStorage.setItem("email", formData.employerEmail);
+      sessionStorage.setItem("role", "employer_admin");
+      sessionStorage.setItem("employerEmail", formData.employerEmail);
+      sessionStorage.setItem("employerPhone", formData.employerPhone);
 
       console.log("Registration success:", data);
       setSubmitted(true);
@@ -88,7 +113,6 @@ const EmployerRegistration = () => {
               <p className="col-span-3 text-center text-red-500">{error}</p>
             )}
 
-            {/* Company Name */}
             <input
               type="text"
               name="companyName"
@@ -99,7 +123,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* Industry */}
             <input
               type="text"
               name="industry"
@@ -110,7 +133,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* Company Size */}
             <input
               type="text"
               name="companySize"
@@ -121,7 +143,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* Website */}
             <input
               type="text"
               name="website"
@@ -132,7 +153,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-3"
             />
 
-            {/* Company Phone */}
             <input
               type="text"
               name="companyPhone"
@@ -143,7 +163,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* Company Address */}
             <input
               type="text"
               name="companyAddress"
@@ -154,7 +173,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 col-span-1 md:col-span-3"
             />
 
-            {/* Employer Name */}
             <input
               type="text"
               name="employerName"
@@ -165,7 +183,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* Employer Email */}
             <input
               type="email"
               name="employerEmail"
@@ -176,7 +193,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* Employer Phone */}
             <input
               type="text"
               name="employerPhone"
@@ -187,7 +203,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* Password */}
             <input
               type="password"
               name="password"
@@ -198,7 +213,6 @@ const EmployerRegistration = () => {
               className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
             />
 
-            {/* Submit button */}
             <div className="col-span-1 md:col-span-3 mt-6 text-center">
               <button
                 type="submit"
@@ -221,10 +235,10 @@ const EmployerRegistration = () => {
 
             <div className="col-span-1 md:col-span-3 mt-6 text-center">
               <a
-                href="/"
+                href="/verify"
                 className="bg-blue-600 text-white font-medium px-6 py-2 rounded-lg hover:bg-blue-700 transition"
               >
-                Back to Signin
+                Verify
               </a>
             </div>
           </div>

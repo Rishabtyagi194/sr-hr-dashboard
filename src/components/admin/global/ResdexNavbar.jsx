@@ -17,7 +17,7 @@ const navItems = [
   { name: "Create User", path: "/createuser", icon: <UserPlus size={20} /> },
   { name: "All Users", path: "/users", icon: <UserPlus size={20} /> },
   { name: "My Archive", path: "/my-archive", icon: <UserPlus size={20} /> },
-  { name: "Consultant Uploded Resume ", path: "/consultant-uploded-resume", icon: <UserPlus size={20} /> },
+  // { name: "Consultant Uploded Resume ", path: "/consultant-uploded-resume", icon: <UserPlus size={20} /> },
 
 ];
 

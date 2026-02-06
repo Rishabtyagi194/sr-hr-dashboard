@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
   FaMapMarkerAlt,
@@ -16,6 +16,7 @@ const JobDetails = () => {
     const fetchJobDetails = async () => {
       try {
         const token = localStorage.getItem("token");
+
         const res = await fetch(
           `http://147.93.72.227:5000/api/jobs/employer-job/${id}`,
           {
@@ -37,9 +38,34 @@ const JobDetails = () => {
     fetchJobDetails();
   }, [id]);
 
-  if (loading)
-    return <p className="text-center text-gray-500">Loading job details...</p>;
-  if (!job) return <p className="text-center text-red-500">Job not found</p>;
+  /* ================= NORMALIZE SKILLS ================= */
+  const skillsArray = useMemo(() => {
+    if (!job?.skills) return [];
+
+    if (Array.isArray(job.skills)) return job.skills;
+
+    if (typeof job.skills === "string") {
+      return job.skills.split(",").map((s) => s.trim());
+    }
+
+    if (typeof job.skills === "object") {
+      return Object.values(job.skills);
+    }
+
+    return [];
+  }, [job]);
+
+  if (loading) {
+    return (
+      <p className="text-center text-gray-500">Loading job details...</p>
+    );
+  }
+
+  if (!job) {
+    return (
+      <p className="text-center text-red-500">Job not found</p>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -50,6 +76,7 @@ const JobDetails = () => {
             <h1 className="text-2xl font-semibold text-gray-900">
               {job.jobTitle}
             </h1>
+
             <p className="text-gray-600 mt-1">
               {job.companyName || "Company Name"}
             </p>
@@ -64,11 +91,11 @@ const JobDetails = () => {
 
               <div className="flex items-center gap-2">
                 <FaRupeeSign />
-                {job?.salaryRangeFrom && job?.salaryRangeTo ? (
+                {job.salaryRangeFrom && job.salaryRangeTo ? (
                   <span>
                     {job.salaryRangeFrom} - {job.salaryRangeTo} LPA
                   </span>
-                ) : job?.offerStipend ? (
+                ) : job.offerStipend ? (
                   <span>{job.offerStipend}</span>
                 ) : (
                   <span className="text-gray-400">Not Disclosed</span>
@@ -84,39 +111,37 @@ const JobDetails = () => {
             </div>
           </div>
 
-          {/* Logo */}
+          {/* Company Logo */}
           <div className="w-14 h-14 rounded-lg border flex items-center justify-center text-xl font-bold">
             {job.companyName?.[0] || "C"}
           </div>
         </div>
 
-        <div className="flex justify-between items-center mt-6 pt-4 border-t">
+        <div className="mt-6 pt-4 border-t">
           <p className="text-sm text-gray-500">
-            Posted {new Date(job.created_at).toLocaleDateString("en-GB")}
+            Posted{" "}
+            {job.created_at
+              ? new Date(job.created_at).toLocaleDateString("en-GB")
+              : "N/A"}
           </p>
-
-          <div className="flex justify-between items-center mt-6 pt-4 border-t">
-            <p className="text-sm text-gray-500">
-              Posted {new Date(job.created_at).toLocaleDateString("en-GB")}
-            </p>
-          </div>
         </div>
       </div>
 
       {/* ================= JOB HIGHLIGHTS ================= */}
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-lg font-semibold mb-4">Job highlights</h2>
+
         <ul className="list-disc pl-6 space-y-2 text-gray-700">
-          {job.jobHighlights?.length > 0 ? (
-            job.jobHighlights.map((item, i) => <li key={i}>{item}</li>)
+          {Array.isArray(job.jobHighlights) &&
+          job.jobHighlights.length > 0 ? (
+            job.jobHighlights.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))
           ) : (
             <>
-              <li>
-                Fresher with strong knowledge of manual testing and automation
-                basics
-              </li>
-              <li>Work on web and mobile application testing</li>
-              <li>Competitive salary and performance-based bonuses</li>
+              <li>Work on modern web applications</li>
+              <li>Collaborative and fast-paced environment</li>
+              <li>Career growth and learning opportunities</li>
             </>
           )}
         </ul>
@@ -127,9 +152,9 @@ const JobDetails = () => {
             <span className="flex items-center gap-1 text-green-600">
               <FaStar /> Early Applicant
             </span>
-            <span className="text-gray-400">Keyskills</span>
+            <span className="text-gray-400">Key skills</span>
             <span className="text-gray-400">Location</span>
-            <span className="text-gray-400">Work Experience</span>
+            <span className="text-gray-400">Experience</span>
           </div>
         </div>
       </div>
@@ -137,15 +162,17 @@ const JobDetails = () => {
       {/* ================= JOB DESCRIPTION ================= */}
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-lg font-semibold mb-3">Job description</h2>
-        <p className="text-gray-700 leading-relaxed">{job.jobDescription}</p>
+        <p className="text-gray-700 leading-relaxed">
+          {job.jobDescription || "No description available."}
+        </p>
       </div>
 
       {/* ================= SKILLS ================= */}
-      {job.skills?.length > 0 && (
+      {skillsArray.length > 0 && (
         <div className="bg-white rounded-xl shadow p-6">
           <h2 className="text-lg font-semibold mb-3">Key skills</h2>
           <div className="flex flex-wrap gap-2">
-            {job.skills.map((skill, i) => (
+            {skillsArray.map((skill, i) => (
               <span
                 key={i}
                 className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm"
@@ -160,7 +187,9 @@ const JobDetails = () => {
       {/* ================= COMPANY ================= */}
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-lg font-semibold mb-3">About company</h2>
-        <p className="text-gray-700">{job.AboutCompany}</p>
+        <p className="text-gray-700">
+          {job.AboutCompany || "Company details not available."}
+        </p>
       </div>
     </div>
   );

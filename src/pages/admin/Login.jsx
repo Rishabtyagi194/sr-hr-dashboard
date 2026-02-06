@@ -21,39 +21,57 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     const validationError = validate();
     if (validationError) {
       toast.error(validationError);
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
-      const response = await fetch("http://147.93.72.227:5000/api/employer/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: email,
-          password: password,
-        }),
-      });
-
+      const response = await fetch(
+        "http://147.93.72.227:5000/api/employer/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: email,
+            password: password,
+          }),
+        }
+      );
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-
-      // ✅ Save token & user info
+  
+      // ✅ STORE ALL DETAILS
       if (data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user || {}));
+        localStorage.setItem("authData", JSON.stringify(data));
+  
+        if (data.user) {
+          localStorage.setItem("user_id", data.user.id || "");
+          localStorage.setItem(
+            "user_name",
+            data.user.name || data.user.full_name || ""
+          );
+          localStorage.setItem("user_email", data.user.email || "");
+          localStorage.setItem("user_role", data.user.role || "");
+          localStorage.setItem(
+            "organisation_id",
+            data.user.organisation_id || ""
+          );
+        }
       }
-
+  
       toast.success("Login successful!");
       navigate("/home");
     } catch (err) {
@@ -62,6 +80,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+  
 
   return (
     <>

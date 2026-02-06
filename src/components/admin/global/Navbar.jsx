@@ -14,8 +14,24 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export const Navbar = () => {
   const navigate = useNavigate();
 
+  // ✅ Read auth data from localStorage
+  const authData = JSON.parse(localStorage.getItem("authData") || "{}");
+  const employer = authData?.employer || {};
+
+  const employerName = employer?.name || "User";
+  const employerEmail = employer?.email || "";
+
+  // ✅ Initials (Abdul → A, Abdul Azeem → AA)
+  const initials = employerName
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("authData");
     localStorage.removeItem("user");
     navigate("/");
   };
@@ -42,12 +58,22 @@ export const Navbar = () => {
         <DropdownMenuTrigger asChild>
           <Avatar className="cursor-pointer">
             <AvatarFallback className="bg-muted text-sm font-medium">
-              U
+              {initials}
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuContent align="end" className="w-56">
+          {/* Employer Info */}
+          <div className="px-3 py-2 border-b">
+            <p className="text-sm font-medium text-gray-800">
+              {employerName}
+            </p>
+            <p className="text-xs text-gray-500 truncate">
+              {employerEmail}
+            </p>
+          </div>
+
           <DropdownMenuItem
             onClick={handleLogout}
             className="flex items-center gap-2 cursor-pointer"
