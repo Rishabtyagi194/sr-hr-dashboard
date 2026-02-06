@@ -39,7 +39,7 @@ export function AppSidebar() {
     { name: "All Users", path: "/users", icon: UserPlus },
     { name: "My Archive", path: "/my-archive", icon: UserPlus },
     { name: "Consultant profile Update ", path: "/consultant-profile-resume ", icon: UserPlus },
-    { name: "Consultant Uploded Resume ", path: "/consultant-uploded-resume ", icon: UserPlus },
+    // { name: "Consultant Uploded Resume ", path: "/consultant-uploded-resume ", icon: UserPlus },
 
 
   ];

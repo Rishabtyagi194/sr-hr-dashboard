@@ -128,14 +128,14 @@ function Layout() {
                   }
                 />
 
-                <Route
+                {/* <Route
                   path="/consultant-uploded-resume"
                   element={
                     <ProtectedRoute>
                       <ResumeUploadedByConsultant />
                     </ProtectedRoute>
                   }
-                />
+                /> */}
 
                 {/* ---------- RESDEX ---------- */}
                 <Route
