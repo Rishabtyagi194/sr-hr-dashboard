@@ -131,62 +131,60 @@ const VerifyOtp = () => {
           <CardTitle className="text-center">Verify OTP</CardTitle>
         </CardHeader>
 
-    {/* ✅ USER DETAILS ALWAYS SHOWN (BEFORE SUCCESS) */}
-    <div className="mt-3 px-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-  <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">
-      Name
-    </label>
-    <input
-      type="text"
-      value={employerName || ""}
-      readOnly
-      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
-    />
-  </div>
+        {/* ✅ USER DETAILS ALWAYS SHOWN (BEFORE SUCCESS) */}
+        <div className="mt-3 px-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              value={employerName || ""}
+              readOnly
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
+            />
+          </div>
 
-  <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">
-      Email
-    </label>
-    <input
-      type="email"
-      value={email || ""}
-      readOnly
-      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
-    />
-  </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email || ""}
+              readOnly
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
+            />
+          </div>
 
-  <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">
-      Phone Number
-    </label>
-    <input
-      type="text"
-      value={employerPhone || "No Phone Number"}
-      readOnly
-      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
-    />
-  </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              value={employerPhone || "No Phone Number"}
+              readOnly
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
+            />
+          </div>
 
-  <div>
-    <label className="block text-xs font-medium text-gray-600 mb-1">
-      Role
-    </label>
-    <input
-      type="text"
-      value={role || "No Role Assigned"}
-      readOnly
-      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
-    />
-  </div>
-</div>
-
-
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Role
+            </label>
+            <input
+              type="text"
+              value={role || "No Role Assigned"}
+              readOnly
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 cursor-not-allowed"
+            />
+          </div>
+        </div>
 
         <CardContent className="space-y-6  ">
           <div className="flex justify-center items-center gap-20">
-          {/* <CardTitle className="text-center">Verify OTP</CardTitle> */}
+            {/* <CardTitle className="text-center">Verify OTP</CardTitle> */}
             <InputOTP
               maxLength={6}
               value={otp}
@@ -201,11 +199,8 @@ const VerifyOtp = () => {
                   <InputOTPSlot key={i} index={i} />
                 ))}
               </InputOTPGroup>
-              
             </InputOTP>
           </div>
-
-         
 
           <p className="text-xs text-center text-gray-500">
             Attempts left: {MAX_ATTEMPTS - attempts}
