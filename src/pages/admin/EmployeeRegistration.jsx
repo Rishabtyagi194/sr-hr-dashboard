@@ -19,6 +19,7 @@ const EmployerRegistration = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   // ---------------- HANDLERS ----------------
   const handleChange = (e) => {
@@ -132,7 +133,7 @@ const EmployerRegistration = () => {
           Employer Registration
         </h2>
 
-        {/* 🔔 PASSWORD WARNING */}
+        {/* PASSWORD WARNING */}
         <div className="mb-5 p-3 bg-yellow-50 border border-yellow-300 rounded text-sm text-yellow-700">
           Password must contain at least <b>8 characters</b>, including
           <b> uppercase</b>, <b>lowercase</b>, <b>number</b>, and
@@ -164,32 +165,54 @@ const EmployerRegistration = () => {
             {/* Industry */}
             <div className="flex flex-col">
               <label className="text-sm font-medium mb-1">Industry</label>
-              <input
-                type="text"
+              <select
                 name="industry"
                 value={formData.industry}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
-              />
+                className="border rounded-lg p-2 bg-white"
+              >
+                <option value="">Select industry</option>
+                <option value="IT & Software">IT & Software</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Education">Education</option>
+                <option value="Finance">Finance</option>
+                <option value="Retail">Retail</option>
+                <option value="Construction">Construction</option>
+                <option value="Logistics">Logistics</option>
+                <option value="Hospitality">Hospitality</option>
+                <option value="Marketing & Advertising">
+                  Marketing & Advertising
+                </option>
+                <option value="E-commerce">E-commerce</option>
+                <option value="Others">Others</option>
+              </select>
             </div>
 
             {/* Company Size */}
             <div className="flex flex-col">
               <label className="text-sm font-medium mb-1">Company Size</label>
-              <input
-                type="text"
+              <select
                 name="companySize"
                 value={formData.companySize}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
-              />
+                className="border rounded-lg p-2 bg-white"
+              >
+                <option value="">Select company size</option>
+                <option value="1-10">1–10</option>
+                <option value="10-50">10–50</option>
+                <option value="50-100">50–100</option>
+                <option value="100+">100+</option>
+              </select>
             </div>
 
             {/* Website */}
             <div className="flex flex-col md:col-span-3">
-              <label className="text-sm font-medium mb-1">Company Website</label>
+              <label className="text-sm font-medium mb-1">
+                Company Website
+              </label>
               <input
                 type="text"
                 name="website"
@@ -246,7 +269,9 @@ const EmployerRegistration = () => {
 
             {/* Address */}
             <div className="flex flex-col md:col-span-3">
-              <label className="text-sm font-medium mb-1">Company Address</label>
+              <label className="text-sm font-medium mb-1">
+                Company Address
+              </label>
               <input
                 type="text"
                 name="companyAddress"
@@ -276,16 +301,25 @@ const EmployerRegistration = () => {
             </div>
 
             {/* Password */}
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <label className="text-sm font-medium mb-1">Password</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
+                className="border rounded-lg p-2 pr-12"
               />
+
+              {/* Show / Hide */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-8 text-sm text-blue-600"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
 
               {passwordStrength && (
                 <span
@@ -302,9 +336,7 @@ const EmployerRegistration = () => {
               )}
 
               {errors.password && (
-                <span className="text-xs text-red-500">
-                  {errors.password}
-                </span>
+                <span className="text-xs text-red-500">{errors.password}</span>
               )}
             </div>
 
@@ -325,8 +357,8 @@ const EmployerRegistration = () => {
               Verification Pending
             </p>
             <p className="text-gray-600 mt-2">
-              Your registration has been submitted successfully.  
-              We’ll verify your details shortly.
+              Your registration has been submitted successfully. We’ll verify
+              your details shortly.
             </p>
           </div>
         )}

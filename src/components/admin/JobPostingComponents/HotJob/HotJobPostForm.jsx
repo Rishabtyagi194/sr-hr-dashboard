@@ -224,9 +224,9 @@ const JobPostForm = ({}) => {
       CompanyIndustry: companyIndustry || "Information Technology",
       workMode,
       jobLocation: {
-        city: locations[0] || "Mumbai",
-        state: "Maharashtra",
-        country: "India",
+        city: locations[0] || "",
+        state: "",
+        country: "",
       },
       willingToRelocate: relocate,
       locality,
