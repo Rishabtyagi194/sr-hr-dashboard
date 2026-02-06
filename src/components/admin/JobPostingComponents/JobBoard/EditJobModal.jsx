@@ -13,7 +13,7 @@ const EditJobPage = () => {
         const token = localStorage.getItem("token");
 
         const res = await fetch(
-          `http://147.93.72.227:5000/api/jobs/employer-job/${id}`,
+          `https://qa.api.rozgardwar.cloud/api/jobs/employer-job/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -49,7 +49,7 @@ const EditJobPage = () => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://147.93.72.227:5000/api/jobs/update-job/${id}`, // confirm endpoint with backend
+        `https://qa.api.rozgardwar.cloud/api/jobs/update-job/${id}`, // confirm endpoint with backend
         {
           method: "PUT",
           headers: {

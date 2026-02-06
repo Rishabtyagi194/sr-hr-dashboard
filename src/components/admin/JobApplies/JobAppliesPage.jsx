@@ -91,7 +91,7 @@ const JobAppliesPage = () => {
         const token = localStorage.getItem("token");
 
         const res = await fetch(
-          `http://147.93.72.227:5000/api/jobs/employer-job/${jobId}`,
+          `https://qa.api.rozgardwar.cloud/api/jobs/employer-job/${jobId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -165,7 +165,7 @@ const JobAppliesPage = () => {
       console.log("SEARCH PAYLOAD 👉", payload);
 
       const response = await fetch(
-        "http://147.93.72.227:5000/api/search/resume",
+        "https://qa.api.rozgardwar.cloud/api/search/resume",
         {
           method: "POST",
           headers: {

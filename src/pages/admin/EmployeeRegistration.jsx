@@ -29,7 +29,7 @@ const EmployerRegistration = () => {
 
     try {
       const response = await fetch(
-        "http://147.93.72.227:5000/api/organization/register",
+        "https://qa.api.rozgardwar.cloud/api/organization/register",
         {
           method: "POST",
           headers: {

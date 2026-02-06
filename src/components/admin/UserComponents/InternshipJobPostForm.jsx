@@ -126,7 +126,7 @@ const InternshipJobPostForm = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://147.93.72.227:5000/api/jobs/create",
+        "https://qa.api.rozgardwar.cloud/api/jobs/create",
         {
           method: "POST",
           headers: {

@@ -150,7 +150,7 @@ const Resdex = () => {
       console.log("FINAL PAYLOAD 👉", payload);
 
       const response = await fetch(
-        "http://147.93.72.227:5000/api/search/resume",
+        "https://qa.api.rozgardwar.cloud/api/search/resume",
         {
           method: "POST",
           headers: {

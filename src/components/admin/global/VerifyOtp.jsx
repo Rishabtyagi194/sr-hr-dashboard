@@ -62,7 +62,7 @@ const VerifyOtp = () => {
     setError("");
 
     try {
-      const res = await fetch("http://147.93.72.227:5000/otp/verify-otp", {
+      const res = await fetch("https://qa.api.rozgardwar.cloud/otp/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ otp, email, role }),
@@ -101,7 +101,7 @@ const VerifyOtp = () => {
     setError("");
 
     try {
-      const res = await fetch("http://147.93.72.227:5000/otp/resend-otp", {
+      const res = await fetch("https://qa.api.rozgardwar.cloud/otp/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, role }),

@@ -131,7 +131,7 @@ const InternshipJob = () => {
     try {
       setIsPosting(true);
 
-      const res = await fetch("http://147.93.72.227:5000/api/internship/create", {
+      const res = await fetch("https://qa.api.rozgardwar.cloud/api/internship/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

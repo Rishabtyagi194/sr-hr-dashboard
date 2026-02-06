@@ -27,7 +27,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "http://147.93.72.227:5000/api/employer/forgot-password",
+        "https://qa.api.rozgardwar.cloud/api/employer/forgot-password",
         {
           method: "POST",
           headers: {

@@ -18,7 +18,7 @@ const UserResponseContainer = () => {
       }
 
       const res = await fetch(
-        "http://147.93.72.227:5000/api/jobs/applications/consultant/all/submitted-resume",
+        "https://qa.api.rozgardwar.cloud/api/jobs/applications/consultant/all/submitted-resume",
         {
           method: "GET",
           headers: {
