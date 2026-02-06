@@ -1,6 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const LatestJobDashboard = () => {
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          throw new Error("Access token missing");
+        }
+
+        const res = await fetch(
+          "https://qa.api.rozgardwar.cloud/api/jobs/employer-jobs",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch jobs");
+
+        const data = await res.json();
+        setJobs(data?.data || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Grid Layout */}
@@ -12,6 +51,7 @@ const LatestJobDashboard = () => {
             <h2 className="text-lg font-semibold mb-4">
               Latest Job Post Reports
             </h2>
+
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="text-gray-500">
@@ -21,40 +61,35 @@ const LatestJobDashboard = () => {
                   <th className="pb-2">Transactions</th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-gray-200">
-                {[
-                  {
-                    browser: "Chrome",
-                    sessions: "10853 (52%)",
-                    bounce: "52.80%",
-                    trans: "566 (92%)",
-                  },
-                  {
-                    browser: "Microsoft Edge",
-                    sessions: "2545 (47%)",
-                    bounce: "47.54%",
-                    trans: "498 (81%)",
-                  },
-                  {
-                    browser: "Internet Explorer",
-                    sessions: "1836 (38%)",
-                    bounce: "41.12%",
-                    trans: "455 (74%)",
-                  },
-                  {
-                    browser: "Opera",
-                    sessions: "1958 (31%)",
-                    bounce: "36.82%",
-                    trans: "361 (61%)",
-                  },
-                ].map((row, i) => (
+                {(jobs.length ? jobs : []).map((job, i) => (
                   <tr key={i} className="hover:bg-gray-50">
-                    <td className="py-2">{row.browser}</td>
-                    <td>{row.sessions}</td>
-                    <td>{row.bounce}</td>
-                    <td>{row.trans}</td>
+                    <td className="py-2">{job.job_title}</td>
+                    <td>{job.company_name}</td>
+                    <td>{job.location}</td>
+                    <td>{job.experience_required}</td>
                   </tr>
                 ))}
+
+                {!loading && jobs.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan="4"
+                      className="py-4 text-center text-gray-500"
+                    >
+                      No jobs found
+                    </td>
+                  </tr>
+                )}
+
+                {error && (
+                  <tr>
+                    <td colSpan="4" className="py-4 text-center text-red-500">
+                      {error}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -106,7 +141,9 @@ const LatestJobDashboard = () => {
                     <td>{row.prev}</td>
                     <td
                       className={
-                        row.change.includes("-") ? "text-red-500" : "text-green-600"
+                        row.change.includes("-")
+                          ? "text-red-500"
+                          : "text-green-600"
                       }
                     >
                       {row.change}
@@ -123,40 +160,12 @@ const LatestJobDashboard = () => {
           {/* Sessions Device */}
           <div className="bg-white rounded-2xl shadow p-6">
             <h2 className="text-lg font-semibold mb-4">Sessions Device</h2>
-
-            {/* Circle Chart Placeholder */}
             <div className="flex justify-center">
               <div className="w-32 h-32 rounded-full border-[12px] border-blue-400 border-t-blue-600 border-l-blue-300"></div>
             </div>
-
             <p className="text-sm text-gray-500 text-center mt-4">
               01 January 2020 to 31 December 2020
             </p>
-
-            <table className="w-full mt-4 text-sm">
-              <thead>
-                <tr className="text-gray-500">
-                  <th className="pb-2">Device</th>
-                  <th className="pb-2">Sessions</th>
-                  <th className="pb-2">Day</th>
-                  <th className="pb-2">Week</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {[
-                  { device: "Desktops", sessions: 1843, day: -3, week: -12 },
-                  { device: "Tablets", sessions: 2543, day: -5, week: -2 },
-                  { device: "Mobiles", sessions: 3654, day: -5, week: -6 },
-                ].map((row, i) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                    <td className="py-2">{row.device}</td>
-                    <td>{row.sessions}</td>
-                    <td>{row.day}</td>
-                    <td>{row.week}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
 
           {/* Traffic Sources */}
