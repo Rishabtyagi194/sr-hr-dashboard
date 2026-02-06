@@ -24,7 +24,6 @@ import CandidateProfilePage from "./components/admin/resdex/CandidateProfile";
 import ResdexNavbar from "./components/admin/global/ResdexNavbar";
 import JobDetails from "./components/admin/JobPostingComponents/JobBoard/JobDetailsById";
 import { AppSidebar } from "./components/admin/global/AppSidebar";
-
 import { SidebarProvider } from "@/components/ui/sidebar";
 import JobAppliesPage from "./components/admin/JobApplies/JobAppliesPage";
 import ForgotPassword from "./pages/admin/ForgotPassword";
@@ -61,8 +60,7 @@ function Layout() {
         {/* Main Content */}
         <div className="flex flex-col flex-1 w-full overflow-x-hidden">
           {/* Navbar */}
-          {!hideNavbar &&
-            (isResdexRoute ? <ResdexNavbar /> : <Navbar />)}
+          {!hideNavbar && (isResdexRoute ? <ResdexNavbar /> : <Navbar />)}
 
           {/* PAGE CONTENT */}
           <main className="flex-1 w-full overflow-x-hidden px-6 py-4">
