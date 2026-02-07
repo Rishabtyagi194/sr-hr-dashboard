@@ -279,8 +279,6 @@ const JobPostForm = ({}) => {
       if (!response.ok) {
         throw new Error(data.message || "Failed to create job");
       }
-
-  
     } catch (error) {
       console.error("Error creating job:", error);
       // alert("Error creating job: " + error.message);
@@ -840,15 +838,14 @@ const JobPostForm = ({}) => {
           </DialogHeader>
 
           <DialogFooter className="flex justify-end">
-          <Button
-  onClick={() => {
-    setSuccessModalOpen(false);
-    navigate("/jobposting");
-  }}
->
-  Go to Job List
-</Button>
-
+            <Button
+              onClick={() => {
+                setSuccessModalOpen(false);
+                navigate("/jobposting");
+              }}
+            >
+              Go to Job List
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

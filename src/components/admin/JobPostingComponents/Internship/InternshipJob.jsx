@@ -47,7 +47,7 @@ const InternshipJob = () => {
       details.industry &&
       candidate.skills?.length > 0 &&
       candidate.education?.length > 0 &&
-      description?.trim() 
+      description?.trim()
     );
   };
 
@@ -61,16 +61,11 @@ const InternshipJob = () => {
       newErrors.employmentType = "Employment type is required";
     if (!details.internshipDuration)
       newErrors.duration = "Duration is required";
-    if (!details.internshipDate)
-      newErrors.date = "Start date is required";
-    if (!details.offeredStipend)
-      newErrors.stipend = "Stipend is required";
-    if (!details.workMode)
-      newErrors.workMode = "Work mode is required";
-    if (!details.location)
-      newErrors.location = "Location is required";
-    if (!details.industry)
-      newErrors.industry = "Industry is required";
+    if (!details.internshipDate) newErrors.date = "Start date is required";
+    if (!details.offeredStipend) newErrors.stipend = "Stipend is required";
+    if (!details.workMode) newErrors.workMode = "Work mode is required";
+    if (!details.location) newErrors.location = "Location is required";
+    if (!details.industry) newErrors.industry = "Industry is required";
 
     if (!candidate.skills || candidate.skills.length === 0)
       newErrors.skills = "At least one skill is required";
@@ -101,7 +96,7 @@ const InternshipJob = () => {
     const payload = {
       internshipTitle: details.jobTitle,
       is_consultant_Job_Active: responseSettings.isConsultantVisible,
-      AboutCompany: responseSettings.aboutCompany, 
+      AboutCompany: responseSettings.aboutCompany,
       employmentType: details.employmentType,
       duration: details.internshipDuration,
       internshipStartDate: details.internshipDate,
@@ -131,14 +126,17 @@ const InternshipJob = () => {
     try {
       setIsPosting(true);
 
-      const res = await fetch("https://qa.api.rozgardwar.cloud/api/internship/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        "https://qa.api.rozgardwar.cloud/api/internship/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await res.json();
 
@@ -192,18 +190,23 @@ const InternshipJob = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              Confirm {pendingStatus === "draft" ? "Save Draft" : "Post Internship"}
+              Confirm{" "}
+              {pendingStatus === "draft" ? "Save Draft" : "Post Internship"}
             </DialogTitle>
             <DialogDescription>
               Are you sure you want to{" "}
               {pendingStatus === "draft"
                 ? "save this internship as draft"
-                : "post this internship"}?
+                : "post this internship"}
+              ?
             </DialogDescription>
           </DialogHeader>
 
           <DialogFooter className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmModalOpen(false)}
+            >
               Cancel
             </Button>
             <Button
