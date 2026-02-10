@@ -137,12 +137,8 @@ const JobDashboard = () => {
       setAllJobs((prev) => prev.filter((job) => job.job_id !== id));
       setHotJobs((prev) => prev.filter((job) => job.job_id !== id));
       setDraftJobs((prev) => prev.filter((job) => job.job_id !== id));
-      setInternshipsActive((prev) =>
-        prev.filter((job) => job.job_id !== id)
-      );
-      setInternshipsDraft((prev) =>
-        prev.filter((job) => job.job_id !== id)
-      );
+      setInternshipsActive((prev) => prev.filter((job) => job.job_id !== id));
+      setInternshipsDraft((prev) => prev.filter((job) => job.job_id !== id));
 
       console.log("Deleted successfully:", id);
     } catch (error) {
@@ -237,7 +233,7 @@ const JobDashboard = () => {
             key={job._id || job.job_id}
             job={job}
             onDelete={handleDelete}
-            type={type}   // 🔥 IMPORTANT
+            type={type} // 🔥 IMPORTANT
           />
         ))
       )}
