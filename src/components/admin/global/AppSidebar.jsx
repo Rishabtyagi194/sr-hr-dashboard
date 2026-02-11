@@ -20,6 +20,11 @@ import {
   FileSearch,
   Send,
   ChevronDown,
+  House,
+  Mailbox,
+  Database,
+  UserRoundPen,
+  PackageSearch,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -33,12 +38,12 @@ export function AppSidebar() {
   const [openResdex, setOpenResdex] = React.useState(false);
 
   const navItems = [
-    { name: "Home", path: "/home", icon: UserPlus },
-    { name: "Job Posting", path: "/jobposting", icon: UserPlus },
+    { name: "Home", path: "/home", icon: House },
+    { name: "Job Posting", path: "/jobposting", icon: Mailbox },
     { name: "Create User", path: "/createuser", icon: UserPlus },
-    { name: "All Users", path: "/users", icon: UserPlus },
-    { name: "My Archive", path: "/my-archive", icon: UserPlus },
-    { name: "Consultant profile Update ", path: "/consultant-profile-resume ", icon: UserPlus },
+    { name: "All Users", path: "/users", icon: Users },
+    { name: "My Archive", path: "/my-archive", icon: Database },
+    { name: "Consultant profile Update ", path: "/consultant-profile-resume ", icon: UserRoundPen },
     // { name: "Consultant Uploded Resume ", path: "/consultant-uploded-resume ", icon: UserPlus },
 
 
@@ -46,7 +51,7 @@ export function AppSidebar() {
 
   const resdexSubItems = [
     // { name: "Manage Searches", path: "/resdex/manage-search", icon: Search },
-    { name: "Search Resumes", path: "/resdex/resume-search", icon: FileSearch },
+    { name: "Search Resumes", path: "/resdex/resume-search", icon: Search },
     // { name: "Send NVites", path: "/resdex/send-nvites", icon: Send },
     // { name: "Folders", path: "/resdex/folders", icon: Send },
     // { name: "Resdex Requirements", path: "/resdex/requirements", icon: Send },
@@ -63,7 +68,7 @@ export function AppSidebar() {
       {/* Header */}
       <SidebarHeader className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black">
         <span className="font-bold text-lg text-white">RD</span>
-        <SidebarTrigger className="text-white hover:bg-white/10" />
+        <SidebarTrigger className="text-white hover:bg-white " />
       </SidebarHeader>
 
       {/* Content */}
@@ -105,7 +110,7 @@ export function AppSidebar() {
                   className={`${baseItemClass} w-full justify-between text-gray-300 hover:bg-white/10 hover:text-white`}
                 >
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 shrink-0" />
+                    <PackageSearch className="h-4 w-4 shrink-0" />
                     <span>Resdex</span>
                   </div>
                   <ChevronDown
