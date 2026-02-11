@@ -45,11 +45,11 @@ export function AppSidebar() {
   ];
 
   const resdexSubItems = [
-    { name: "Manage Searches", path: "/resdex/manage-search", icon: Search },
+    // { name: "Manage Searches", path: "/resdex/manage-search", icon: Search },
     { name: "Search Resumes", path: "/resdex/resume-search", icon: FileSearch },
-    { name: "Send NVites", path: "/resdex/send-nvites", icon: Send },
-    { name: "Folders", path: "/resdex/folders", icon: Send },
-    { name: "Resdex Requirements", path: "/resdex/requirements", icon: Send },
+    // { name: "Send NVites", path: "/resdex/send-nvites", icon: Send },
+    // { name: "Folders", path: "/resdex/folders", icon: Send },
+    // { name: "Resdex Requirements", path: "/resdex/requirements", icon: Send },
   ];
 
   const baseItemClass =
@@ -62,7 +62,7 @@ export function AppSidebar() {
     >
       {/* Header */}
       <SidebarHeader className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black">
-        <span className="font-bold text-lg text-white">Rozgar Dwar</span>
+        <span className="font-bold text-lg text-white">RD</span>
         <SidebarTrigger className="text-white hover:bg-white/10" />
       </SidebarHeader>
 

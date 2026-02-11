@@ -7,7 +7,7 @@ const Signup = () => {
       {/* Left Side - Form */}
       <div className="w-full md:w-1/2 p-8">
         {/* Logo */}
-        <h2 className="text-xl font-bold text-purple-600 mb-6">Rozgar dwar</h2>
+        <h2 className="text-xl font-bold text-purple-600 mb-6">RD</h2>
 
         {/* Title */}
         <h3 className="text-2xl font-semibold mb-6">Signup</h3>
@@ -92,7 +92,7 @@ const Signup = () => {
 
         {/* Copyright */}
         <p className="text-xs text-gray-400 text-center mt-6">
-          © 2024 Rozgar dwar. Design with ❤️ by Shreethemes.
+          © 2024 RD. Design with ❤️ by Shreethemes.
         </p>
       </div>
 

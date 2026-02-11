@@ -105,7 +105,7 @@ const Login = () => {
           {/* Left Side - Form */}
           <div className="w-full md:w-1/2 p-8">
             <h2 className="text-xl font-bold text-[#0078db] mb-6">
-              Rozgar dwar
+              RD
             </h2>
             <h3 className="text-2xl font-semibold mb-6">Login</h3>
 

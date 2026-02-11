@@ -22,11 +22,11 @@ const navItems = [
 ];
 
 const resdexSubItems = [
-  { name: "Manage Searches", path: "/resdex/manage-search", icon: <Search size={16} /> },
+  // { name: "Manage Searches", path: "/resdex/manage-search", icon: <Search size={16} /> },
   { name: "Search Resumes", path: "/resdex/resume-search", icon: <FileSearch size={16} /> },
-  { name: "Send NVites", path: "/resdex/send-nvites", icon: <Send size={16} /> },
-  { name: "Folders", path: "/resdex/folders", icon: <Send size={16} /> },
-  { name: "Resdex Requirements", path: "/resdex/requirements", icon: <Send size={16} /> },
+  // { name: "Send NVites", path: "/resdex/send-nvites", icon: <Send size={16} /> },
+  // { name: "Folders", path: "/resdex/folders", icon: <Send size={16} /> },
+  // { name: "Resdex Requirements", path: "/resdex/requirements", icon: <Send size={16} /> },
 ];
 
 const ResdexNavbar = () => {
@@ -56,7 +56,7 @@ const ResdexNavbar = () => {
       <div className="flex items-center gap-6">
         {/* Logo */}
         <div className="text-lg font-semibold text-blue-600">
-         Rozgar Dwar
+         RD
         </div>
 
         {/* Main Nav */}

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const EmployerRegistration = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     companyName: "",
     industry: "",
@@ -17,6 +21,7 @@ const EmployerRegistration = () => {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -53,15 +58,28 @@ const EmployerRegistration = () => {
   const validate = () => {
     const newErrors = {};
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.employerEmail)) {
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key].trim()) {
+        newErrors[key] = "This field is required";
+      }
+    });
+
+    if (
+      formData.employerEmail &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.employerEmail)
+    ) {
       newErrors.employerEmail = "Enter a valid email address";
     }
 
-    if (!/^[6-9]\d{9}$/.test(formData.employerPhone)) {
+    if (
+      formData.employerPhone &&
+      !/^[6-9]\d{9}$/.test(formData.employerPhone)
+    ) {
       newErrors.employerPhone = "Enter a valid 10-digit phone number";
     }
 
     if (
+      formData.password &&
       !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(
         formData.password
       )
@@ -78,6 +96,7 @@ const EmployerRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccessMessage("");
 
     if (!validate()) return;
 
@@ -115,11 +134,22 @@ const EmployerRegistration = () => {
       );
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Registration failed");
 
-      setSubmitted(true);
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      // ✅ Redirect after OTP sent (2 sec delay for UX)
+      setSuccessMessage(data.message || "OTP sent successfully!");
+
+      setTimeout(() => {
+        navigate("/verify", {
+          state: { email: formData.employerEmail },
+        });
+      }, 1500);
+
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -133,24 +163,24 @@ const EmployerRegistration = () => {
           Employer Registration
         </h2>
 
-        {/* PASSWORD WARNING */}
-        <div className="mb-5 p-3 bg-yellow-50 border border-yellow-300 rounded text-sm text-yellow-700">
-          Password must contain at least <b>8 characters</b>, including
-          <b> uppercase</b>, <b>lowercase</b>, <b>number</b>, and
-          <b> special character</b>.
-        </div>
+        {error && (
+          <div className="mb-4 text-center text-red-600 font-medium">
+            {error}
+          </div>
+        )}
 
-        {!submitted ? (
-          <form
-            onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          >
-            {error && (
-              <p className="col-span-3 text-center text-red-500">{error}</p>
-            )}
+        {successMessage && (
+          <div className="mb-4 text-center text-green-600 font-medium">
+            {successMessage}
+          </div>
+        )}
 
-            {/* Company Name */}
-            <div className="flex flex-col">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        >
+                      {/* Company Name */}
+                      <div className="flex flex-col">
               <label className="text-sm font-medium mb-1">Company Name</label>
               <input
                 type="text"
@@ -158,8 +188,13 @@ const EmployerRegistration = () => {
                 value={formData.companyName}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
+                className="border rounded-lg p-2 cursor-pointer"
               />
+              {errors.companyName && (
+                <span className="text-xs text-red-500">
+                  {errors.companyName}
+                </span>
+              )}
             </div>
 
             {/* Industry */}
@@ -170,7 +205,7 @@ const EmployerRegistration = () => {
                 value={formData.industry}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2 bg-white"
+                className="border rounded-lg p-2 bg-white cursor-pointer"
               >
                 <option value="">Select industry</option>
                 <option value="IT & Software">IT & Software</option>
@@ -188,6 +223,11 @@ const EmployerRegistration = () => {
                 <option value="E-commerce">E-commerce</option>
                 <option value="Others">Others</option>
               </select>
+              {errors.industry && (
+                <span className="text-xs text-red-500">
+                  {errors.industry}
+                </span>
+              )}
             </div>
 
             {/* Company Size */}
@@ -198,7 +238,7 @@ const EmployerRegistration = () => {
                 value={formData.companySize}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2 bg-white"
+                className="border rounded-lg p-2 bg-white cursor-pointer"
               >
                 <option value="">Select company size</option>
                 <option value="1-10">1–10</option>
@@ -206,10 +246,15 @@ const EmployerRegistration = () => {
                 <option value="50-100">50–100</option>
                 <option value="100+">100+</option>
               </select>
+              {errors.companySize && (
+                <span className="text-xs text-red-500">
+                  {errors.companySize}
+                </span>
+              )}
             </div>
 
-            {/* Website */}
-            <div className="flex flex-col md:col-span-3">
+                     {/* Website */}
+                     <div className="flex flex-col md:col-span-3">
               <label className="text-sm font-medium mb-1">
                 Company Website
               </label>
@@ -219,7 +264,7 @@ const EmployerRegistration = () => {
                 value={formData.website}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
+                className="border rounded-lg p-2 cursor-pointer"
               />
             </div>
 
@@ -232,7 +277,7 @@ const EmployerRegistration = () => {
                 value={formData.companyPhone}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
+                className="border rounded-lg p-2 cursor-pointer"
               />
             </div>
 
@@ -245,7 +290,7 @@ const EmployerRegistration = () => {
                 value={formData.employerName}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
+                className="border rounded-lg p-2 cursor-pointer"
               />
             </div>
 
@@ -258,7 +303,7 @@ const EmployerRegistration = () => {
                 value={formData.employerPhone}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
+                className="border rounded-lg p-2 cursor-pointer"
               />
               {errors.employerPhone && (
                 <span className="text-xs text-red-500">
@@ -278,7 +323,7 @@ const EmployerRegistration = () => {
                 value={formData.companyAddress}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
+                className="border rounded-lg p-2 cursor-pointer"
               />
             </div>
 
@@ -291,7 +336,7 @@ const EmployerRegistration = () => {
                 value={formData.employerEmail}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2"
+                className="border rounded-lg p-2 cursor-pointer"
               />
               {errors.employerEmail && (
                 <span className="text-xs text-red-500">
@@ -303,34 +348,26 @@ const EmployerRegistration = () => {
             {/* Password */}
             <div className="flex flex-col relative">
               <label className="text-sm font-medium mb-1">Password</label>
+
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="border rounded-lg p-2 pr-12"
+                className="border rounded-lg p-2 pr-12 cursor-pointer"
               />
 
-              {/* Show / Hide */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-8 text-sm text-blue-600"
+                className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 cursor-pointer"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
               </button>
 
               {passwordStrength && (
-                <span
-                  className={`text-xs mt-1 ${
-                    passwordStrength === "Weak"
-                      ? "text-red-500"
-                      : passwordStrength === "Medium"
-                      ? "text-yellow-600"
-                      : "text-green-600"
-                  }`}
-                >
+                <span className="text-xs mt-1">
                   Password Strength: {passwordStrength}
                 </span>
               )}
@@ -340,28 +377,24 @@ const EmployerRegistration = () => {
               )}
             </div>
 
-            {/* Submit */}
-            <div className="col-span-1 md:col-span-3 text-center mt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="bg-blue-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-lg font-semibold text-yellow-600">
-              Verification Pending
-            </p>
-            <p className="text-gray-600 mt-2">
-              Your registration has been submitted successfully. We’ll verify
-              your details shortly.
-            </p>
+          {/* Submit */}
+          <div className="col-span-1 md:col-span-3 text-center mt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Processing...
+                </>
+              ) : (
+                "Submit"
+              )}
+            </button>
           </div>
-        )}
+        </form>
       </div>
     </div>
   );
