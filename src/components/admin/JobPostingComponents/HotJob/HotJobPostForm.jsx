@@ -14,7 +14,7 @@ import { Loader2 } from "lucide-react";
 
 const JobPostForm = ({}) => {
   const [jobTitle, setJobTitle] = useState("");
-  const [employmentType, setEmploymentType] = useState("Full Time, Permanent");
+  const [employmentType, setEmploymentType] = useState("Select");
   const [skills, setSkills] = useState([]);
   const [companyIndustry, setCompanyIndustry] = useState("");
   const [roleCategory, setRoleCategory] = useState("Other");
@@ -95,8 +95,8 @@ const JobPostForm = ({}) => {
   const [jobDescription, setJobDescription] = useState("");
   const [aboutcompany, setaboutcompany] = useState("");
 
-  const [expFrom, setExpFrom] = useState(1);
-  const [expTo, setExpTo] = useState(6);
+  const [expFrom, setExpFrom] = useState();
+  const [expTo, setExpTo] = useState();
 
   const [salaryFrom, setSalaryFrom] = useState("");
   const [salaryTo, setSalaryTo] = useState("");
@@ -315,6 +315,7 @@ const JobPostForm = ({}) => {
               onChange={(e) => setEmploymentType(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2"
             >
+              <option>Select</option>
               <option>Full Time, Permanent</option>
               <option>Part Time</option>
               <option>Contract</option>

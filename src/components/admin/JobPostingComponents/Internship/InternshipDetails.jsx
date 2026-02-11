@@ -288,14 +288,14 @@ import { useNavigate } from "react-router-dom";
           </div>
 
           {/* Submit */}
-          <div className="pt-4">
+          {/* <div className="pt-4">
             <button
               type="submit"
               className="bg-blue-600 text-white px-6 py-2 rounded-lg"
             >
               Next
             </button>
-          </div>
+          </div> */}
         </form>
       </div>
     </div>
