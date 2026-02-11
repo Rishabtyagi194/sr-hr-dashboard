@@ -64,7 +64,7 @@ const ForgotPassword = () => {
           {/* Left Side */}
           <div className="w-full md:w-1/2 p-8">
             <h2 className="text-xl font-bold text-[#0078db] mb-6">
-              Rozgar Dwar
+              RD
             </h2>
             <h3 className="text-2xl font-semibold mb-2">
               Forgot Password

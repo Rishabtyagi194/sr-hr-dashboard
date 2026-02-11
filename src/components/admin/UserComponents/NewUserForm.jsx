@@ -72,7 +72,7 @@ export const NewUserForm = () => {
     <div className="flex justify-center bg-gray-100 p-8">
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden flex w-full max-w-2xl">
         <div className="w-full p-8">
-          <h2 className="text-xl font-bold text-[#0078db] mb-6">Rozgar dwar</h2>
+          <h2 className="text-xl font-bold text-[#0078db] mb-6">RD</h2>
           <h3 className="text-2xl font-semibold mb-6">Create User</h3>
 
           <form onSubmit={handleSubmit} className="space-y-4">
