@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export const NewUserForm = () => {
   const [firstName, setFirstName] = useState("");
@@ -7,17 +8,51 @@ export const NewUserForm = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const [access, setAccess] = useState("User"); // 👈 Default role
+  const [access, setAccess] = useState("User");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const API_URL = "https://qa.api.rozgardwar.cloud/api/employer/staff/create";
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const API_URL =
+    "https://qa.api.rozgardwar.cloud/api/employer/staff/create";
+
+  // 🔥 Live password match state
+  const passwordsMatch =
+    confirmPassword.length > 0 && password === confirmPassword;
+  const passwordsMismatch =
+    confirmPassword.length > 0 && password !== confirmPassword;
+
+  const validate = () => {
+    if (!firstName.trim()) return "First name is required";
+    if (!lastName.trim()) return "Last name is required";
+
+    if (!phone.trim()) return "Phone is required";
+    if (!/^[6-9]\d{9}$/.test(phone))
+      return "Enter valid 10 digit phone number";
+
+    if (!email.trim()) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return "Enter valid email address";
+
+    if (!password) return "Password is required";
+    if (password.length < 6)
+      return "Password must be at least 6 characters";
+
+    if (!confirmPassword) return "Confirm password is required";
+    if (password !== confirmPassword)
+      return "Passwords do not match";
+
+    return "";
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setMessage("Passwords do not match!");
+    const validationError = validate();
+    if (validationError) {
+      setMessage(validationError);
       return;
     }
 
@@ -59,7 +94,7 @@ export const NewUserForm = () => {
         setPhone("");
         setAccess("User");
       } else {
-        setMessage(`Error: ${data.message || "Something went wrong"}`);
+        setMessage(data.message || "Something went wrong");
       }
     } catch (error) {
       setMessage("Network error, please try again.");
@@ -137,33 +172,62 @@ export const NewUserForm = () => {
             </div>
 
             {/* Password */}
-            <div>
+            <div className="relative">
               <label className="block text-sm font-medium mb-1">
                 Password <span className="text-red-500">*</span>
               </label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
+                className="w-full border rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none"
               />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-9 cursor-pointer text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
 
             {/* Confirm Password */}
-            <div>
+            <div className="relative">
               <label className="block text-sm font-medium mb-1">
                 Confirm Password <span className="text-red-500">*</span>
               </label>
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
+                className={`w-full border rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none 
+                  ${passwordsMismatch ? "border-red-500" : ""}
+                  ${passwordsMatch ? "border-green-500" : ""}
+                `}
               />
+              <span
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+                className="absolute right-3 top-9 cursor-pointer text-gray-500"
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+
+              {passwordsMismatch && (
+                <p className="text-red-500 text-xs mt-1">
+                  Passwords do not match
+                </p>
+              )}
+
+              {passwordsMatch && (
+                <p className="text-green-600 text-xs mt-1">
+                  Passwords matched ✓
+                </p>
+              )}
             </div>
 
             {/* Access Toggle */}
@@ -179,7 +243,7 @@ export const NewUserForm = () => {
                     value="Admin"
                     checked={access === "Admin"}
                     onChange={(e) => setAccess(e.target.value)}
-                    className="text-[#0078db] focus:ring-[#0078db]"
+                    className="text-[#0078db]"
                   />
                   <span className="text-sm">Yes</span>
                 </label>
@@ -190,7 +254,7 @@ export const NewUserForm = () => {
                     value="User"
                     checked={access === "User"}
                     onChange={(e) => setAccess(e.target.value)}
-                    className="text-[#0078db] focus:ring-[#0078db]"
+                    className="text-[#0078db]"
                   />
                   <span className="text-sm">No</span>
                 </label>
@@ -207,7 +271,9 @@ export const NewUserForm = () => {
               />
               <label htmlFor="terms" className="ml-2 text-sm text-gray-600">
                 I Accept{" "}
-                <span className="text-[#0078db]">Terms And Condition</span>
+                <span className="text-[#0078db]">
+                  Terms And Condition
+                </span>
               </label>
             </div>
 
@@ -221,7 +287,6 @@ export const NewUserForm = () => {
             </button>
           </form>
 
-          {/* Message */}
           {message && (
             <p className="mt-4 text-center text-sm font-medium text-red-500">
               {message}

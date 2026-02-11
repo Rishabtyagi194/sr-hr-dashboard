@@ -357,44 +357,51 @@ const InternshipJobPostForm = () => {
           </div>
 
           {/* Education */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Educational qualification <span className="text-red-500">*</span>
-            </label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {education.map((edu, idx) => (
-                <span
-                  key={idx}
-                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
-                >
-                  {edu}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveEducation(edu)}
-                    className="text-red-500"
-                  >
-                    ✕
-                  </button>
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add more education"
-                value={newEducation}
-                onChange={(e) => setNewEducation(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
-              />
-              <button
-                type="button"
-                onClick={handleAddEducation}
-                className="bg-blue-600 text-white px-4 rounded-lg"
-              >
-                Add
-              </button>
-            </div>
-          </div>
+        <div>
+  <label className="block text-sm font-medium mb-2">
+    Educational qualification <span className="text-red-500">*</span>
+  </label>
+
+  {/* Scrollable Tags Container */}
+  <div className="max-h-32 overflow-y-auto border border-gray-200 rounded-lg p-2 mb-2">
+    <div className="flex flex-wrap gap-2">
+      {education.map((edu, idx) => (
+        <span
+          key={idx}
+          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2 text-sm"
+        >
+          {edu}
+          <button
+            type="button"
+            onClick={() => handleRemoveEducation(edu)}
+            className="text-red-500 hover:text-red-700"
+          >
+            ✕
+          </button>
+        </span>
+      ))}
+    </div>
+  </div>
+
+  {/* Input Section */}
+  <div className="flex gap-2">
+    <input
+      type="text"
+      placeholder="Add more education"
+      value={newEducation}
+      onChange={(e) => setNewEducation(e.target.value)}
+      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+    />
+    <button
+      type="button"
+      onClick={handleAddEducation}
+      className="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-lg"
+    >
+      Add
+    </button>
+  </div>
+</div>
+
           <div>
             <label className="block text-sm font-medium mb-2">
               Job Description <span className="text-red-500">*</span>
