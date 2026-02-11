@@ -95,7 +95,7 @@ const LatestJobDashboard = () => {
           </div>
 
           {/* Channel Reports */}
-          <div className="bg-white rounded-2xl shadow p-6">
+          {/* <div className="bg-white rounded-2xl shadow p-6">
             <h2 className="text-lg font-semibold mb-4">
               Browser Used & Traffic Reports
             </h2>
@@ -152,7 +152,7 @@ const LatestJobDashboard = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div> */}
         </div>
 
         {/* Right Section */}
@@ -169,7 +169,7 @@ const LatestJobDashboard = () => {
           </div>
 
           {/* Traffic Sources */}
-          <div className="bg-white rounded-2xl shadow p-6">
+          {/* <div className="bg-white rounded-2xl shadow p-6">
             <h2 className="text-lg font-semibold mb-2">Traffic Sources</h2>
             <p className="text-gray-600 text-sm">
               It is a long established fact that a reader will be of a page when
@@ -181,7 +181,7 @@ const LatestJobDashboard = () => {
                 Read More →
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
