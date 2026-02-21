@@ -6,6 +6,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,21 +14,15 @@ const Login = () => {
 
   // ---------------- VALIDATION ----------------
   const validate = () => {
-    if (!email.trim()) {
-      return "Email is required";
-    }
+    if (!email.trim()) return "Email is required";
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return "Please enter a valid email address";
-    }
 
-    if (!password) {
-      return "Password is required";
-    }
+    if (!password) return "Password is required";
 
-    if (password.length < 6) {
+    if (password.length < 6)
       return "Password must be at least 6 characters long";
-    }
 
     return "";
   };
@@ -65,29 +60,18 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      // ✅ STORE ALL DETAILS
-      if (data.token) {
+      // ✅ STORE TOKEN + EMPLOYER
+      if (data.token && data.employer) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user || {}));
-        localStorage.setItem("authData", JSON.stringify(data));
-
-        if (data.user) {
-          localStorage.setItem("user_id", data.user.id || "");
-          localStorage.setItem(
-            "user_name",
-            data.user.name || data.user.full_name || ""
-          );
-          localStorage.setItem("user_email", data.user.email || "");
-          localStorage.setItem("user_role", data.user.role || "");
-          localStorage.setItem(
-            "organisation_id",
-            data.user.organisation_id || ""
-          );
-        }
+        localStorage.setItem("user", JSON.stringify(data.employer));
       }
 
       toast.success("Login successful!");
-      navigate("/home");
+
+      // Small delay so user can see toast
+      setTimeout(() => {
+        navigate("/home");
+      }, 1000);
     } catch (err) {
       toast.error(err.message || "Something went wrong");
     } finally {
@@ -97,19 +81,18 @@ const Login = () => {
 
   return (
     <>
-      {/* Toast Container */}
       <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
         <div className="bg-white shadow-lg rounded-2xl overflow-hidden flex w-full max-w-5xl">
+          
           {/* Left Side - Form */}
           <div className="w-full md:w-1/2 p-8">
-            <h2 className="text-xl font-bold text-[#0078db] mb-6">
-              RD
-            </h2>
+            <h2 className="text-xl font-bold text-[#0078db] mb-6">RD</h2>
             <h3 className="text-2xl font-semibold mb-6">Login</h3>
 
             <form className="space-y-4" onSubmit={handleLogin}>
+              
               {/* Email */}
               <div>
                 <label className="block text-sm font-medium mb-1">
