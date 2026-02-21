@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 
 const STATUS_TABS = [
   { key: "ALL", label: "All responses" },
+  
   { key: "APPLIED", label: "Applied" },
-  { key: "SHORTLISTED", label: "Shortlisted" },
-  { key: "MAYBE", label: "Maybe" },
-  { key: "REJECTED", label: "Rejected" },
   { key: "VIEWED", label: "Profile View" },
-  { key: "interview_scheduled", label: "Interview Scheduled" },
+  { key: "MAYBE", label: "In Process" },
+  { key: "SHORTLISTED", label: "CV Shortlisted" },
+  { key: "REJECTED", label: "Rejected" },
+  // { key: "VIEWED", label: "Profile View" },
+
+  { key: "interview_scheduled", label: "Dropped" },
   { key: "HIRED", label: "Hired" },
 ];
 

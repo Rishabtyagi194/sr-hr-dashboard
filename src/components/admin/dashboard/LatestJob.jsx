@@ -55,10 +55,11 @@ const LatestJobDashboard = () => {
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="text-gray-500">
-                  <th className="pb-2">Browser</th>
-                  <th className="pb-2">Sessions</th>
-                  <th className="pb-2">Bounce Rate</th>
-                  <th className="pb-2">Transactions</th>
+                  <th className="pb-2">Job Title</th>
+                  <th className="pb-2">Location</th>
+                  <th className="pb-2">Experience</th>
+                  <th className="pb-2">Consultant </th>
+                  <th className="pb-2">Posted By</th>
                 </tr>
               </thead>
 

@@ -5,7 +5,7 @@ import LatestJobDashboard from "../../components/admin/dashboard/LatestJob";
 const Home = () => {
   return (
     <div className="">
-        <SubNavbar />
+        {/* <SubNavbar />  */}
         <div className="p-6">
   <LatestJobDashboard />
         </div>
