@@ -80,7 +80,7 @@ import { useNavigate } from "react-router-dom";
           </div>
 
           {/* Internship Type */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium mb-2">
               Internship type <span className="text-red-500">*</span>
             </label>
@@ -90,9 +90,10 @@ import { useNavigate } from "react-router-dom";
               className="w-full border border-gray-300 rounded-lg px-3 py-2"
             >
               <option>Full Time, Permanent</option>
-              <option>Part Time</option>
-            </select>
-          </div>
+              <option>Summer Internship</option> */}
+              {/* <option>Part Time</option> */}
+            {/* </select>
+          </div> */}
 
           {/* Duration */}
           <div>

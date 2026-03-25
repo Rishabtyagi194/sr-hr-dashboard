@@ -389,6 +389,10 @@ const JobPostForm = ({}) => {
               className="w-full border border-gray-300 rounded-lg px-3 py-2"
             >
               <option>In office</option>
+              <option>Field work</option>
+
+              {/* <option></option> */}
+
               <option>Remote</option>
               <option>Hybrid</option>
             </select>
@@ -462,6 +466,7 @@ const JobPostForm = ({}) => {
               Work experience (years) <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2">
+              Min
               <input
                 type="number"
                 min="0"
@@ -477,6 +482,7 @@ const JobPostForm = ({}) => {
                 onChange={(e) => setExpTo(e.target.value)}
                 className="w-1/2 border border-gray-300 rounded-lg px-3 py-2"
               />
+              Max
             </div>
           </div>
 

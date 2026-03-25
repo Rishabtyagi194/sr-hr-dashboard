@@ -77,14 +77,14 @@ export const InternshipDescription = ({ setDescription }) => {
         />
       </div>
 
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <button
           onClick={() => console.log(description)}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg"
         >
           Save Description
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
