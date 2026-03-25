@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Country, State, City } from "country-state-city";
+import Select from "react-select";
 import { useNavigate } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
+import industries from "industries";
 
 const EmployerRegistration = () => {
   const navigate = useNavigate();
@@ -26,6 +32,22 @@ const EmployerRegistration = () => {
   const [passwordStrength, setPasswordStrength] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const [country, setCountry] = useState(null);
+  const [state, setState] = useState(null);
+  const [city, setCity] = useState(null);
+
+  const countries = Country.getAllCountries();
+
+  const states = country ? State.getStatesOfCountry(country.isoCode) : [];
+  const cities = state
+    ? City.getCitiesOfState(country.isoCode, state.isoCode)
+    : [];
+  const industryOptions = (
+    Array.isArray(industries) ? industries : Object.values(industries)
+  ).map((industry) => ({
+    label: industry.name || industry,
+    value: industry.name || industry,
+  }));
   // ---------------- HANDLERS ----------------
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,6 +91,9 @@ const EmployerRegistration = () => {
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.employerEmail)
     ) {
       newErrors.employerEmail = "Enter a valid email address";
+    }
+    if (formData.website && !isValidWebsite(formData.website)) {
+      newErrors.website = "Enter a valid website (example: https//website.com)";
     }
 
     if (
@@ -147,7 +172,6 @@ const EmployerRegistration = () => {
           state: { email: formData.employerEmail },
         });
       }, 1500);
-
     } catch (err) {
       setError(err.message || "Something went wrong");
     } finally {
@@ -155,6 +179,46 @@ const EmployerRegistration = () => {
     }
   };
 
+  const handleCountryChange = (e) => {
+    const countryCode = e.target.value;
+
+    setSelectedCountry(countryCode);
+    setStates(State.getStatesOfCountry(countryCode));
+    setCities([]);
+  };
+
+  const handleStateChange = (e) => {
+    const stateCode = e.target.value;
+
+    setSelectedState(stateCode);
+    setCities(City.getCitiesOfState(selectedCountry, stateCode));
+  };
+
+  const handleCityChange = (e) => {
+    const city = e.target.value;
+
+    setFormData((prev) => ({
+      ...prev,
+      companyAddress: city,
+    }));
+  };
+
+  const isValidWebsite = (url) => {
+    try {
+      const formatted = url.startsWith("http") ? url : `https://${url}`;
+      const parsed = new URL(formatted);
+
+      const domainParts = parsed.hostname.split(".");
+      const tld = domainParts[domainParts.length - 1];
+
+      // allow common domain extensions only
+      const validTlds = ["com", "in", "org", "net", "co", "io", "ai"];
+
+      return domainParts.length >= 2 && validTlds.includes(tld);
+    } catch {
+      return false;
+    }
+  };
   // ---------------- UI ----------------
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -179,203 +243,237 @@ const EmployerRegistration = () => {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
-                      {/* Company Name */}
-                      <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Company Name</label>
-              <input
-                type="text"
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 cursor-pointer"
-              />
-              {errors.companyName && (
-                <span className="text-xs text-red-500">
-                  {errors.companyName}
-                </span>
-              )}
-            </div>
+          {/* Company Name */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Company Name</label>
+            <input
+              type="text"
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleChange}
+              required
+              className="border rounded-lg p-2 cursor-pointer"
+            />
+            {errors.companyName && (
+              <span className="text-xs text-red-500">{errors.companyName}</span>
+            )}
+          </div>
 
-            {/* Industry */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Industry</label>
-              <select
-                name="industry"
-                value={formData.industry}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 bg-white cursor-pointer"
-              >
-                <option value="">Select industry</option>
-                <option value="IT & Software">IT & Software</option>
-                <option value="Manufacturing">Manufacturing</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Education">Education</option>
-                <option value="Finance">Finance</option>
-                <option value="Retail">Retail</option>
-                <option value="Construction">Construction</option>
-                <option value="Logistics">Logistics</option>
-                <option value="Hospitality">Hospitality</option>
-                <option value="Marketing & Advertising">
-                  Marketing & Advertising
-                </option>
-                <option value="E-commerce">E-commerce</option>
-                <option value="Others">Others</option>
-              </select>
-              {errors.industry && (
-                <span className="text-xs text-red-500">
-                  {errors.industry}
-                </span>
-              )}
-            </div>
+          {/* Industry */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Industry</label>
 
-            {/* Company Size */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Company Size</label>
-              <select
-                name="companySize"
-                value={formData.companySize}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 bg-white cursor-pointer"
-              >
-                <option value="">Select company size</option>
-                <option value="1-10">1–10</option>
-                <option value="10-50">10–50</option>
-                <option value="50-100">50–100</option>
-                <option value="100+">100+</option>
-              </select>
-              {errors.companySize && (
-                <span className="text-xs text-red-500">
-                  {errors.companySize}
-                </span>
-              )}
-            </div>
+            <Select
+              options={industryOptions}
+              placeholder="Search Industry"
+              value={
+                formData.industry
+                  ? { label: formData.industry, value: formData.industry }
+                  : null
+              }
+              onChange={(option) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  industry: option.value,
+                }))
+              }
+            />
 
-                     {/* Website */}
-                     <div className="flex flex-col md:col-span-3">
-              <label className="text-sm font-medium mb-1">
-                Company Website
-              </label>
-              <input
-                type="text"
-                name="website"
-                value={formData.website}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 cursor-pointer"
-              />
-            </div>
+            {errors.industry && (
+              <span className="text-xs text-red-500">{errors.industry}</span>
+            )}
+          </div>
 
-            {/* Company Phone */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Company Phone</label>
-              <input
-                type="text"
-                name="companyPhone"
-                value={formData.companyPhone}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 cursor-pointer"
-              />
-            </div>
+          {/* Company Size */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Company Size</label>
+            <select
+              name="companySize"
+              value={formData.companySize}
+              onChange={handleChange}
+              required
+              className="border rounded-lg p-2 bg-white cursor-pointer"
+            >
+              <option value="">Select company size</option>
+              <option value="1-10">1–10</option>
+              <option value="10-50">10–50</option>
+              <option value="50-100">50–100</option>
+              <option value="100+">100+</option>
+            </select>
+            {errors.companySize && (
+              <span className="text-xs text-red-500">{errors.companySize}</span>
+            )}
+          </div>
 
-            {/* Employer Name */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Employer Name</label>
-              <input
-                type="text"
-                name="employerName"
-                value={formData.employerName}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 cursor-pointer"
-              />
-            </div>
+          {/* Website */}
+          <div className="flex flex-col md:col-span-3">
+            <label className="text-sm font-medium mb-1">Company Website</label>
+            <input
+              type="text"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              placeholder="Example: https//rozgardwar.com"
+              className="border rounded-lg p-2 cursor-pointer"
+            />
 
-            {/* Employer Phone */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Employer Phone</label>
-              <input
-                type="text"
-                name="employerPhone"
-                value={formData.employerPhone}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 cursor-pointer"
-              />
-              {errors.employerPhone && (
-                <span className="text-xs text-red-500">
-                  {errors.employerPhone}
-                </span>
-              )}
-            </div>
+            {errors.website && (
+              <span className="text-xs text-red-500">{errors.website}</span>
+            )}
+          </div>
 
-            {/* Address */}
-            <div className="flex flex-col md:col-span-3">
-              <label className="text-sm font-medium mb-1">
-                Company Address
-              </label>
-              <input
-                type="text"
-                name="companyAddress"
-                value={formData.companyAddress}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 cursor-pointer"
-              />
-            </div>
+          {/* Company Phone */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Company Phone</label>
+            <PhoneInput
+              country={"in"}
+              value={formData.companyPhone}
+              onChange={(phone) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  companyPhone: phone,
+                }))
+              }
+              inputClass="!w-full !h-10"
+            />
+          </div>
 
-            {/* Email */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Employer Email</label>
-              <input
-                type="email"
-                name="employerEmail"
-                value={formData.employerEmail}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 cursor-pointer"
-              />
-              {errors.employerEmail && (
-                <span className="text-xs text-red-500">
-                  {errors.employerEmail}
-                </span>
-              )}
-            </div>
+          {/* Employer Name */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Employer Name</label>
+            <input
+              type="text"
+              name="employerName"
+              value={formData.employerName}
+              onChange={handleChange}
+              required
+              className="border rounded-lg p-2 cursor-pointer"
+            />
+          </div>
 
-            {/* Password */}
-            <div className="flex flex-col relative">
-              <label className="text-sm font-medium mb-1">Password</label>
+          {/* Employer Phone */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Employer Phone</label>
+            <PhoneInput
+              country={"in"}
+              value={formData.employerPhone}
+              onChange={(phone) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  employerPhone: phone,
+                }))
+              }
+              inputClass="!w-full !h-10"
+            />
+            {errors.employerPhone && (
+              <span className="text-xs text-red-500">
+                {errors.employerPhone}
+              </span>
+            )}
+          </div>
 
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="border rounded-lg p-2 pr-12 cursor-pointer"
+          {/* Company Location */}
+          <div className="flex flex-col md:col-span-3">
+            <label className="text-sm font-medium mb-1">Company Location</label>
+
+            <div className="grid md:grid-cols-3 gap-3">
+              {/* Country Search */}
+              <Select
+                options={countries}
+                getOptionLabel={(e) => e.name}
+                getOptionValue={(e) => e.isoCode}
+                placeholder="Search Country"
+                value={country}
+                onChange={(item) => {
+                  setCountry(item);
+                  setState(null);
+                  setCity(null);
+                }}
               />
 
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 cursor-pointer"
-              >
-                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-              </button>
+              {/* State Search */}
+              <Select
+                options={states}
+                getOptionLabel={(e) => e.name}
+                getOptionValue={(e) => e.isoCode}
+                placeholder="Search State"
+                value={state}
+                onChange={(item) => {
+                  setState(item);
+                  setCity(null);
+                }}
+                isDisabled={!country}
+              />
 
-              {passwordStrength && (
-                <span className="text-xs mt-1">
-                  Password Strength: {passwordStrength}
-                </span>
-              )}
+              {/* City Search */}
+              <Select
+                options={cities}
+                getOptionLabel={(e) => e.name}
+                getOptionValue={(e) => e.name}
+                placeholder="Search City"
+                value={city}
+                onChange={(item) => {
+                  setCity(item);
 
-              {errors.password && (
-                <span className="text-xs text-red-500">{errors.password}</span>
-              )}
+                  setFormData((prev) => ({
+                    ...prev,
+                    companyAddress: item.name,
+                  }));
+                }}
+                isDisabled={!state}
+              />
             </div>
+          </div>
+
+          {/* Email */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Employer Email</label>
+            <input
+              type="email"
+              name="employerEmail"
+              value={formData.employerEmail}
+              onChange={handleChange}
+              required
+              className="border rounded-lg p-2 cursor-pointer"
+            />
+            {errors.employerEmail && (
+              <span className="text-xs text-red-500">
+                {errors.employerEmail}
+              </span>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="flex flex-col relative">
+            <label className="text-sm font-medium mb-1">Password</label>
+
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="border rounded-lg p-2 pr-12 cursor-pointer"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700 cursor-pointer"
+            >
+              {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+            </button>
+
+            {passwordStrength && (
+              <span className="text-xs mt-1">
+                Password Strength: {passwordStrength}
+              </span>
+            )}
+
+            {errors.password && (
+              <span className="text-xs text-red-500">{errors.password}</span>
+            )}
+          </div>
 
           {/* Submit */}
           <div className="col-span-1 md:col-span-3 text-center mt-4">
