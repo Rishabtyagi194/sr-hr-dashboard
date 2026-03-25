@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import AddQuestionModal from "./AddQuestionModal";
 import {
   Dialog,
@@ -16,8 +16,11 @@ import Select from "react-select";
 import { City } from "country-state-city";
 import { skillsList } from "@/config/skillsList";
 
+const debounceRef = useRef(null);
+
 const JobPostForm = ({}) => {
   const [jobTitle, setJobTitle] = useState("");
+  const [filteredJobTitles, setFilteredJobTitles] = useState([]);
   const [employmentType, setEmploymentType] = useState("Select");
   const [skills, setSkills] = useState([]);
   const [companyIndustry, setCompanyIndustry] = useState("");
@@ -332,6 +335,39 @@ const JobPostForm = ({}) => {
     setFilteredSkills(filtered);
   };
 
+  const handleJobTitleInput = (value) => {
+    setJobTitle(value);
+
+    if (!value) {
+      setFilteredJobTitles([]);
+      return;
+    }
+
+    clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://api.datamuse.com/sug?s=${value}`);
+        const data = await res.json();
+
+        const titles = data
+          .map((item) => item.word)
+          .filter(
+            (word) =>
+              word.toLowerCase().includes("developer") ||
+              word.toLowerCase().includes("engineer") ||
+              word.toLowerCase().includes("manager") ||
+              word.toLowerCase().includes("designer")
+          )
+          .slice(0, 18);
+
+        setFilteredJobTitles(titles);
+      } catch (err) {
+        console.error("Job title fetch error:", err);
+      }
+    }, 30);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
@@ -343,13 +379,32 @@ const JobPostForm = ({}) => {
             <label className="block text-sm font-medium mb-2">
               Job title / Designation <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              placeholder="Enter Job Title"
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Enter Job Title"
+                value={jobTitle}
+                onChange={(e) => handleJobTitleInput(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              />
+
+              {filteredJobTitles.length > 0 && (
+                <div className="absolute left-0 bg-white border w-full mt-1 rounded shadow-lg z-50">
+                  {filteredJobTitles.map((title, index) => (
+                    <div
+                      key={index}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setJobTitle(title);
+                        setFilteredJobTitles([]);
+                      }}
+                    >
+                      {title}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Employment Type */}
