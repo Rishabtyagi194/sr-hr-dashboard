@@ -14,7 +14,7 @@ import { Loader2 } from "lucide-react";
 import industries from "industries";
 import Select from "react-select";
 import { City } from "country-state-city";
-
+import { skillsList } from "@/config/skillsList";
 
 const JobPostForm = ({}) => {
   const [jobTitle, setJobTitle] = useState("");
@@ -38,6 +38,7 @@ const JobPostForm = ({}) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState(null); // "active" or "draft"
   const [isPosting, setIsPosting] = useState(false);
+  const [filteredSkills, setFilteredSkills] = useState([]);
   const navigate = useNavigate();
   const allCities = City.getAllCities();
 
@@ -47,21 +48,18 @@ const JobPostForm = ({}) => {
 
   const handleLocationInput = (value) => {
     setNewLocation(value);
-  
+
     if (!value) {
       setFilteredCities([]);
       return;
     }
-  
+
     const filtered = cityOptions
-      .filter((city) =>
-        city.toLowerCase().includes(value.toLowerCase())
-      )
+      .filter((city) => city.toLowerCase().includes(value.toLowerCase()))
       .slice(0, 8);
-  
+
     setFilteredCities(filtered);
   };
-
 
   const validateForm = () => {
     const newErrors = {};
@@ -319,6 +317,20 @@ const JobPostForm = ({}) => {
     value: industry.name || industry,
   }));
 
+  const handleSkillInput = (value) => {
+    setNewkeyskills(value);
+
+    if (!value) {
+      setFilteredSkills([]);
+      return;
+    }
+
+    const filtered = skillsList
+      .filter((skill) => skill.toLowerCase().includes(value.toLowerCase()))
+      .slice(0, 8);
+
+    setFilteredSkills(filtered);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
@@ -384,9 +396,27 @@ const JobPostForm = ({}) => {
                 type="text"
                 placeholder="Add skills that are crucial for the job"
                 value={newkeyskills}
-                onChange={(e) => setNewkeyskills(e.target.value)}
+                onChange={(e) => handleSkillInput(e.target.value)}
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
               />
+
+              {filteredSkills.length > 0 && (
+                <div className="absolute bg-white border w-[400px] mt-10 rounded shadow z-10 max-h-40 overflow-y-auto">
+                  {filteredSkills.map((skill, index) => (
+                    <div
+                      key={index}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setNewkeyskills(skill);
+                        setFilteredSkills([]);
+                      }}
+                    >
+                      {skill}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <button
                 type="button"
                 onClick={handleAddKeySkills}
@@ -401,18 +431,18 @@ const JobPostForm = ({}) => {
             <label className="block text-sm font-medium mb-2">
               Company industry <span className="text-red-500">*</span>
             </label>
-        <Select
-  options={industryOptions}
-  placeholder="Search company industry"
-  value={
-    companyIndustry
-      ? { label: companyIndustry, value: companyIndustry }
-      : null
-  }
-  onChange={(option) => setCompanyIndustry(option.value)}
-  className="react-select-container"
-  classNamePrefix="react-select"
-/>
+            <Select
+              options={industryOptions}
+              placeholder="Search company industry"
+              value={
+                companyIndustry
+                  ? { label: companyIndustry, value: companyIndustry }
+                  : null
+              }
+              onChange={(option) => setCompanyIndustry(option.value)}
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
           </div>
 
           {/* Work Mode */}
@@ -458,32 +488,32 @@ const JobPostForm = ({}) => {
               ))}
             </div>
             <div className="flex gap-2">
-            <div className="flex-1 relative">
-  <input
-    type="text"
-    placeholder="Add more locations"
-    value={newLocation}
-    onChange={(e) => handleLocationInput(e.target.value)}
-    className="w-full border border-gray-300 rounded-lg px-3 py-2"
-  />
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Add more locations"
+                  value={newLocation}
+                  onChange={(e) => handleLocationInput(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                />
 
-  {filteredCities.length > 0 && (
-    <div className="absolute bg-white border w-full mt-1 rounded shadow z-10 max-h-40 overflow-y-auto">
-      {filteredCities.map((city, index) => (
-        <div
-          key={index}
-          className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-          onClick={() => {
-            setNewLocation(city);
-            setFilteredCities([]);
-          }}
-        >
-          {city}
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+                {filteredCities.length > 0 && (
+                  <div className="absolute bg-white border w-full mt-1 rounded shadow z-10 max-h-40 overflow-y-auto">
+                    {filteredCities.map((city, index) => (
+                      <div
+                        key={index}
+                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setNewLocation(city);
+                          setFilteredCities([]);
+                        }}
+                      >
+                        {city}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={handleAddLocation}
