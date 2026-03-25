@@ -16,7 +16,6 @@ import Select from "react-select";
 import { City } from "country-state-city";
 import { skillsList } from "@/config/skillsList";
 
-const debounceRef = useRef(null);
 
 const JobPostForm = ({}) => {
   const [jobTitle, setJobTitle] = useState("");
@@ -48,6 +47,9 @@ const JobPostForm = ({}) => {
   const cityOptions = allCities.map((city) => city.name);
 
   const [filteredCities, setFilteredCities] = useState([]);
+
+const debounceRef = useRef(null);
+
 
   const handleLocationInput = (value) => {
     setNewLocation(value);
