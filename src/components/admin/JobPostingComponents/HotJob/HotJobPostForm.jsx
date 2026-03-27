@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import AddQuestionModal from "./AddQuestionModal";
 import {
   Dialog,
@@ -11,9 +11,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import industries from "industries";
+import Select from "react-select";
+import { City } from "country-state-city";
+import { skillsList } from "@/config/skillsList";
+
 
 const JobPostForm = ({}) => {
   const [jobTitle, setJobTitle] = useState("");
+  const [filteredJobTitles, setFilteredJobTitles] = useState([]);
   const [employmentType, setEmploymentType] = useState("Select");
   const [skills, setSkills] = useState([]);
   const [companyIndustry, setCompanyIndustry] = useState("");
@@ -34,7 +40,31 @@ const JobPostForm = ({}) => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState(null); // "active" or "draft"
   const [isPosting, setIsPosting] = useState(false);
+  const [filteredSkills, setFilteredSkills] = useState([]);
   const navigate = useNavigate();
+  const allCities = City.getAllCities();
+
+  const cityOptions = allCities.map((city) => city.name);
+
+  const [filteredCities, setFilteredCities] = useState([]);
+
+const debounceRef = useRef(null);
+
+
+  const handleLocationInput = (value) => {
+    setNewLocation(value);
+
+    if (!value) {
+      setFilteredCities([]);
+      return;
+    }
+
+    const filtered = cityOptions
+      .filter((city) => city.toLowerCase().includes(value.toLowerCase()))
+      .slice(0, 8);
+
+    setFilteredCities(filtered);
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -285,6 +315,61 @@ const JobPostForm = ({}) => {
     }
   };
 
+  const industryOptions = (
+    Array.isArray(industries) ? industries : Object.values(industries)
+  ).map((industry) => ({
+    label: industry.name || industry,
+    value: industry.name || industry,
+  }));
+
+  const handleSkillInput = (value) => {
+    setNewkeyskills(value);
+
+    if (!value) {
+      setFilteredSkills([]);
+      return;
+    }
+
+    const filtered = skillsList
+      .filter((skill) => skill.toLowerCase().includes(value.toLowerCase()))
+      .slice(0, 8);
+
+    setFilteredSkills(filtered);
+  };
+
+  const handleJobTitleInput = (value) => {
+    setJobTitle(value);
+
+    if (!value) {
+      setFilteredJobTitles([]);
+      return;
+    }
+
+    clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://api.datamuse.com/sug?s=${value}`);
+        const data = await res.json();
+
+        const titles = data
+          .map((item) => item.word)
+          .filter(
+            (word) =>
+              word.toLowerCase().includes("developer") ||
+              word.toLowerCase().includes("engineer") ||
+              word.toLowerCase().includes("manager") ||
+              word.toLowerCase().includes("designer")
+          )
+          .slice(0, 18);
+
+        setFilteredJobTitles(titles);
+      } catch (err) {
+        console.error("Job title fetch error:", err);
+      }
+    }, 30);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
@@ -296,13 +381,32 @@ const JobPostForm = ({}) => {
             <label className="block text-sm font-medium mb-2">
               Job title / Designation <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              placeholder="Enter Job Title"
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Enter Job Title"
+                value={jobTitle}
+                onChange={(e) => handleJobTitleInput(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              />
+
+              {filteredJobTitles.length > 0 && (
+                <div className="absolute left-0 bg-white border w-full mt-1 rounded shadow-lg z-50">
+                  {filteredJobTitles.map((title, index) => (
+                    <div
+                      key={index}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setJobTitle(title);
+                        setFilteredJobTitles([]);
+                      }}
+                    >
+                      {title}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Employment Type */}
@@ -349,9 +453,27 @@ const JobPostForm = ({}) => {
                 type="text"
                 placeholder="Add skills that are crucial for the job"
                 value={newkeyskills}
-                onChange={(e) => setNewkeyskills(e.target.value)}
+                onChange={(e) => handleSkillInput(e.target.value)}
                 className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
               />
+
+              {filteredSkills.length > 0 && (
+                <div className="absolute bg-white border w-[400px] mt-10 rounded shadow z-10 max-h-40 overflow-y-auto">
+                  {filteredSkills.map((skill, index) => (
+                    <div
+                      key={index}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setNewkeyskills(skill);
+                        setFilteredSkills([]);
+                      }}
+                    >
+                      {skill}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <button
                 type="button"
                 onClick={handleAddKeySkills}
@@ -366,16 +488,18 @@ const JobPostForm = ({}) => {
             <label className="block text-sm font-medium mb-2">
               Company industry <span className="text-red-500">*</span>
             </label>
-            <select
-              value={companyIndustry}
-              onChange={(e) => setCompanyIndustry(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-            >
-              <option>Others</option>
-              <option>IT</option>
-              <option>Software</option>
-              <option>BPO</option>
-            </select>
+            <Select
+              options={industryOptions}
+              placeholder="Search company industry"
+              value={
+                companyIndustry
+                  ? { label: companyIndustry, value: companyIndustry }
+                  : null
+              }
+              onChange={(option) => setCompanyIndustry(option.value)}
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
           </div>
 
           {/* Work Mode */}
@@ -421,13 +545,32 @@ const JobPostForm = ({}) => {
               ))}
             </div>
             <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add more locations"
-                value={newLocation}
-                onChange={(e) => setNewLocation(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
-              />
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Add more locations"
+                  value={newLocation}
+                  onChange={(e) => handleLocationInput(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                />
+
+                {filteredCities.length > 0 && (
+                  <div className="absolute bg-white border w-full mt-1 rounded shadow z-10 max-h-40 overflow-y-auto">
+                    {filteredCities.map((city, index) => (
+                      <div
+                        key={index}
+                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setNewLocation(city);
+                          setFilteredCities([]);
+                        }}
+                      >
+                        {city}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={handleAddLocation}
