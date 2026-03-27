@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export const NewUserForm = () => {
   const [firstName, setFirstName] = useState("");
@@ -29,8 +31,8 @@ export const NewUserForm = () => {
     if (!lastName.trim()) return "Last name is required";
 
     if (!phone.trim()) return "Phone is required";
-    if (!/^[6-9]\d{9}$/.test(phone))
-      return "Enter valid 10 digit phone number";
+    if (phone.length < 10)
+      return "Enter valid phone number";
 
     if (!email.trim()) return "Email is required";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -146,14 +148,19 @@ export const NewUserForm = () => {
               <label className="block text-sm font-medium mb-1">
                 Phone <span className="text-red-500">*</span>
               </label>
-              <input
-                type="tel"
-                placeholder="Phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
-              />
+              <PhoneInput
+  country={"in"}
+  value={phone}
+  onChange={(phone) => setPhone(phone)}
+  inputStyle={{
+    width: "100%",
+    borderRadius: "8px",
+    height: "40px"
+  }}
+  buttonStyle={{
+    borderRadius: "8px 0 0 8px"
+  }}
+/>
             </div>
 
             {/* Email */}
