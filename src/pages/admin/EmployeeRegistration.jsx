@@ -96,11 +96,12 @@ const EmployerRegistration = () => {
       newErrors.website = "Enter a valid website (example: https//website.com)";
     }
 
-    if (
-      formData.employerPhone &&
-      !/^[6-9]\d{9}$/.test(formData.employerPhone)
-    ) {
-      newErrors.employerPhone = "Enter a valid 10-digit phone number";
+    if (formData.employerPhone) {
+      const phone = formData.employerPhone.replace(/\D/g, "").slice(-10);
+    
+      if (!/^[6-9]\d{9}$/.test(phone)) {
+        newErrors.employerPhone = "Enter a valid 10-digit phone number";
+      }
     }
 
     if (
@@ -149,7 +150,7 @@ const EmployerRegistration = () => {
               name: formData.employerName,
               email: formData.employerEmail,
               password: formData.password,
-              phone: formData.employerPhone,
+              phone: formData.employerPhone.replace(/\D/g, "").slice(-10),
               role: "employer_admin",
               permissions: null,
               is_active: true,
@@ -163,8 +164,12 @@ const EmployerRegistration = () => {
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
       }
-
-      // ✅ Redirect after OTP sent (2 sec delay for UX)
+      
+      // ✅ SAVE DATA IN LOCALSTORAGE
+      localStorage.setItem("email", formData.employerEmail);
+      localStorage.setItem("role", "employer_admin");
+      
+      // ✅ success message
       setSuccessMessage(data.message || "OTP sent successfully!");
 
       setTimeout(() => {

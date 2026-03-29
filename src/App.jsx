@@ -30,6 +30,7 @@ import ForgotPassword from "./pages/admin/ForgotPassword";
 import { UplodedResume } from "./components/admin/uploded-resume/UplodedResume";
 import ResumeUploadedByConsultant from "./components/admin/uploded-resume/ResumeUploadByConsultant";
 import VerifyOtp from "./components/admin/global/VerifyOtp.jsx";
+import { Profile } from "./pages/admin/Profile";
 
 function Layout() {
   const location = useLocation();
@@ -75,13 +76,15 @@ function Layout() {
                   element={<EmployerRegistration />}
                 />
 
+                <Route path="/profile" element={<Profile />} />
+
                 {/* ---------- PROTECTED ROUTES ---------- */}
                 <Route
                   path="/home"
                   element={
-                    <ProtectedRoute>
+                    // <ProtectedRoute>
                       <Home />
-                    </ProtectedRoute>
+                    // </ProtectedRoute>
                   }
                 />
 

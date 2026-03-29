@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -35,6 +35,7 @@ import {
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate(); // ✅ added
   const [openResdex, setOpenResdex] = React.useState(false);
 
   const navItems = [
@@ -43,22 +44,50 @@ export function AppSidebar() {
     { name: "Create User", path: "/createuser", icon: UserPlus },
     { name: "All Users", path: "/users", icon: Users },
     { name: "My Archive", path: "/my-archive", icon: Database },
-    { name: "Consultant profile Update ", path: "/consultant-profile-resume ", icon: UserRoundPen },
-    // { name: "Consultant Uploded Resume ", path: "/consultant-uploded-resume ", icon: UserPlus },
-
-
+    {
+      name: "Consultant profile Update ",
+      path: "/consultant-profile-resume ",
+      icon: UserRoundPen,
+    },
   ];
 
   const resdexSubItems = [
-    // { name: "Manage Searches", path: "/resdex/manage-search", icon: Search },
     { name: "Search Resumes", path: "/resdex/resume-search", icon: Search },
-    // { name: "Send NVites", path: "/resdex/send-nvites", icon: Send },
-    // { name: "Folders", path: "/resdex/folders", icon: Send },
-    // { name: "Resdex Requirements", path: "/resdex/requirements", icon: Send },
   ];
 
   const baseItemClass =
     "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors";
+
+  // ✅ Logout Handler (same as Navbar)
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        try {
+          await fetch("/api/logout", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } catch (err) {
+          console.log("Logout API failed (continuing)");
+        }
+      }
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("authData");
+      localStorage.removeItem("user");
+      sessionStorage.clear();
+
+      navigate("/", { replace: true });
+
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 0);
+    }
+  };
 
   return (
     <Sidebar
@@ -74,9 +103,7 @@ export function AppSidebar() {
       {/* Content */}
       <SidebarContent className="bg-black">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-gray-400">
-            Menu
-          </SidebarGroupLabel>
+          <SidebarGroupLabel className="text-gray-400">Menu</SidebarGroupLabel>
 
           <SidebarGroupContent>
             <SidebarMenu>
@@ -169,9 +196,15 @@ export function AppSidebar() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent side="top" className="w-40">
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  Profile
+                </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+
+                {/* ✅ Logout wired here */}
+                <DropdownMenuItem onClick={handleLogout}>
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

@@ -8,8 +8,18 @@ const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const email = location.state?.email || sessionStorage.getItem("email");
-  const role = "employer_admin";
+  // ✅ Get from query params FIRST, fallback to localStorage
+  const params = new URLSearchParams(location.search);
+
+  const email =
+    params.get("email") ||
+    localStorage.getItem("email") ||
+    "";
+
+  const role =
+    params.get("role") ||
+    localStorage.getItem("role") ||
+    "employer_admin";
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,6 +28,13 @@ const VerifyOtp = () => {
   const [success, setSuccess] = useState(false);
   const [timer, setTimer] = useState(RESEND_TIME);
   const [attempts, setAttempts] = useState(0);
+
+  // ✅ Redirect if email missing
+  useEffect(() => {
+    if (!email) {
+      navigate("/register");
+    }
+  }, [email, navigate]);
 
   // ⏱ Timer
   useEffect(() => {
@@ -32,13 +49,15 @@ const VerifyOtp = () => {
 
   // ---------------- VERIFY OTP ----------------
   const handleVerify = async () => {
+    if (!email || !role) return;
+
     if (attempts >= MAX_ATTEMPTS) {
       setError("OTP attempt limit reached. Please resend OTP.");
       return;
     }
 
     if (otp.length !== 6) {
-      setError("Please enter 6 digit OTP");
+      setError("Please enter a valid 6-digit OTP.");
       return;
     }
 
@@ -47,11 +66,13 @@ const VerifyOtp = () => {
 
     try {
       const res = await fetch(
-        "https://qa.api.rozgardwar.cloud/otp/verify-otp",
+        `https://qa.api.rozgardwar.cloud/otp/verify-otp?email=${encodeURIComponent(
+          email
+        )}&role=${encodeURIComponent(role)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ otp, email, role }),
+          body: JSON.stringify({ otp: Number(otp) }),
         }
       );
 
@@ -59,17 +80,20 @@ const VerifyOtp = () => {
 
       if (!res.ok) {
         setAttempts((prev) => prev + 1);
-        throw new Error(data.message || "Invalid OTP");
+        throw new Error(data.message || "OTP verification failed.");
       }
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user_email", email);
+      // ✅ Save auth data
+      localStorage.setItem("token", data.token || "");
+      localStorage.setItem("email", email);
+      localStorage.setItem("role", role);
+      localStorage.setItem("isLoggedIn", "true");
 
       setSuccess(true);
 
       setTimeout(() => {
         navigate("/home");
-      }, 2000);
+      }, 1500);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -79,6 +103,8 @@ const VerifyOtp = () => {
 
   // ---------------- RESEND OTP ----------------
   const handleResendOtp = async () => {
+    if (!email || !role) return;
+
     setResendLoading(true);
     setError("");
 
@@ -117,23 +143,21 @@ const VerifyOtp = () => {
         </h2>
 
         <p className="text-sm text-gray-500 text-center mb-6">
-          Enter the 6-digit OTP sent to your email
+          Enter the 6-digit OTP sent to <b>{email}</b>
         </p>
 
         {/* OTP Input */}
-        <div className="flex justify-center gap-3 mb-4">
-          <input
-            type="text"
-            maxLength={6}
-            value={otp}
-            onChange={(e) => {
-              setOtp(e.target.value.replace(/\D/g, ""));
-              if (error) setError("");
-            }}
-            className="text-center tracking-[10px] text-lg border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-[#0078db] outline-none"
-            placeholder="______"
-          />
-        </div>
+        <input
+          type="text"
+          maxLength={6}
+          value={otp}
+          onChange={(e) => {
+            setOtp(e.target.value.replace(/\D/g, ""));
+            if (error) setError("");
+          }}
+          className="text-center tracking-[10px] text-lg border rounded-lg px-4 py-3 w-full mb-3 focus:ring-2 focus:ring-[#0078db] outline-none"
+          placeholder="______"
+        />
 
         {/* Attempts */}
         <p className="text-xs text-gray-500 text-center mb-2">
@@ -149,37 +173,11 @@ const VerifyOtp = () => {
         <button
           onClick={handleVerify}
           disabled={loading || attempts >= MAX_ATTEMPTS}
-          className={`w-full bg-[#0078db] text-white py-2 rounded-lg transition flex items-center justify-center ${
+          className={`w-full bg-[#0078db] text-white py-2 rounded-lg transition ${
             loading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#005fa8]"
           }`}
         >
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8z"
-                />
-              </svg>
-              Verifying...
-            </span>
-          ) : (
-            "Verify OTP"
-          )}
+          {loading ? "Verifying..." : "Verify OTP"}
         </button>
 
         {/* Success */}
