@@ -1,211 +1,168 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const RESEND_TIME = 30;
-const MAX_ATTEMPTS = 3;
-
-const VerifyOtp = () => {
-  const navigate = useNavigate();
+const RecruiterProfile = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // ✅ Get from query params FIRST, fallback to localStorage
+  // ✅ Get email & role ONLY from params
   const params = new URLSearchParams(location.search);
 
-  const email =
-    params.get("email") ||
-    localStorage.getItem("email") ||
-    "";
+  const email = params.get("email") || "";
+  const role = params.get("role") || "";
 
-  const role =
-    params.get("role") ||
-    localStorage.getItem("role") ||
-    "employer_admin";
+  const [profile, setProfile] = useState({
+    name: "",
+    company: "",
+    industry: "",
+    phone: "",
+    location: "",
+  });
 
-  const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [timer, setTimer] = useState(RESEND_TIME);
-  const [attempts, setAttempts] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // ✅ Redirect if email missing
+  // ✅ Redirect if params missing
   useEffect(() => {
-    if (!email) {
-      navigate("/register");
+    if (!email || !role) {
+      navigate("/home"); // or login
     }
-  }, [email, navigate]);
+  }, [email, role, navigate]);
 
-  // ⏱ Timer
+  // ✅ Load other profile data from localStorage
   useEffect(() => {
-    if (timer === 0) return;
+    const savedProfile = JSON.parse(localStorage.getItem("profile")) || {};
 
-    const interval = setInterval(() => {
-      setTimer((prev) => prev - 1);
-    }, 1000);
+    setProfile({
+      name: savedProfile.name || "",
+      company: savedProfile.company || "",
+      industry: savedProfile.industry || "",
+      phone: savedProfile.phone || "",
+      location: savedProfile.location || "",
+    });
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [timer]);
+  // ✅ Handle input
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-  // ---------------- VERIFY OTP ----------------
-  const handleVerify = async () => {
-    if (!email || !role) return;
-
-    if (attempts >= MAX_ATTEMPTS) {
-      setError("OTP attempt limit reached. Please resend OTP.");
-      return;
-    }
-
-    if (otp.length !== 6) {
-      setError("Please enter a valid 6-digit OTP.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch(
-        `https://qa.api.rozgardwar.cloud/otp/verify-otp?email=${encodeURIComponent(
-          email
-        )}&role=${encodeURIComponent(role)}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ otp: Number(otp) }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setAttempts((prev) => prev + 1);
-        throw new Error(data.message || "OTP verification failed.");
-      }
-
-      // ✅ Save auth data
-      localStorage.setItem("token", data.token || "");
-      localStorage.setItem("email", email);
-      localStorage.setItem("role", role);
-      localStorage.setItem("isLoggedIn", "true");
-
-      setSuccess(true);
-
-      setTimeout(() => {
-        navigate("/home");
-      }, 1500);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    setProfile((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  // ---------------- RESEND OTP ----------------
-  const handleResendOtp = async () => {
-    if (!email || !role) return;
-
-    setResendLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch(
-        "https://qa.api.rozgardwar.cloud/otp/resend-otp",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, role }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to resend OTP");
-      }
-
-      setAttempts(0);
-      setTimer(RESEND_TIME);
-      setOtp("");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setResendLoading(false);
-    }
+  // ✅ Save
+  const handleSave = () => {
+    localStorage.setItem("profile", JSON.stringify(profile));
+    setIsEditing(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white shadow-xl rounded-2xl w-full max-w-md p-8">
-
-        <h2 className="text-2xl font-semibold text-center text-[#0078db] mb-2">
-          Verify OTP
-        </h2>
-
-        <p className="text-sm text-gray-500 text-center mb-6">
-          Enter the 6-digit OTP sent to <b>{email}</b>
-        </p>
-
-        {/* OTP Input */}
-        <input
-          type="text"
-          maxLength={6}
-          value={otp}
-          onChange={(e) => {
-            setOtp(e.target.value.replace(/\D/g, ""));
-            if (error) setError("");
-          }}
-          className="text-center tracking-[10px] text-lg border rounded-lg px-4 py-3 w-full mb-3 focus:ring-2 focus:ring-[#0078db] outline-none"
-          placeholder="______"
-        />
-
-        {/* Attempts */}
-        <p className="text-xs text-gray-500 text-center mb-2">
-          Attempts left: {MAX_ATTEMPTS - attempts}
-        </p>
-
-        {/* Error */}
-        {error && (
-          <p className="text-red-500 text-sm text-center mb-3">{error}</p>
-        )}
-
-        {/* Verify Button */}
-        <button
-          onClick={handleVerify}
-          disabled={loading || attempts >= MAX_ATTEMPTS}
-          className={`w-full bg-[#0078db] text-white py-2 rounded-lg transition ${
-            loading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#005fa8]"
-          }`}
-        >
-          {loading ? "Verifying..." : "Verify OTP"}
-        </button>
-
-        {/* Success */}
-        {success && (
-          <p className="text-green-600 text-center font-medium mt-4">
-            ✅ OTP verified successfully. Redirecting...
-          </p>
-        )}
-
-        {/* Resend */}
-        {!success && (
-          <div className="text-center text-sm text-gray-600 mt-4">
-            {timer > 0 ? (
-              <p>Resend OTP in {timer}s</p>
-            ) : (
-              <button
-                onClick={handleResendOtp}
-                disabled={resendLoading}
-                className="text-[#0078db] hover:underline disabled:opacity-50"
-              >
-                {resendLoading ? "Resending..." : "Resend OTP"}
-              </button>
-            )}
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b pb-4">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Recruiter Profile
+            </h2>
+            <p className="text-sm text-gray-500">{email}</p>
           </div>
-        )}
+
+          {isEditing ? (
+            <button
+              onClick={handleSave}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg"
+            >
+              Save
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+            >
+              Edit Profile
+            </button>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
+          {/* Personal */}
+          <div className="bg-gray-50 p-4 rounded-xl">
+            <h3 className="text-lg font-medium mb-3">Personal Info</h3>
+
+            <input
+              name="name"
+              value={profile.name}
+              onChange={handleChange}
+              placeholder="Enter name"
+              disabled={!isEditing}
+              className="w-full mb-2 p-2 border rounded"
+            />
+
+            <input
+              value={email}
+              disabled
+              className="w-full mb-2 p-2 border rounded bg-gray-100"
+            />
+
+            <input
+              value={role}
+              disabled
+              className="w-full p-2 border rounded bg-gray-100"
+            />
+          </div>
+
+          {/* Company */}
+          <div className="bg-gray-50 p-4 rounded-xl">
+            <h3 className="text-lg font-medium mb-3">Company</h3>
+
+            <input
+              name="company"
+              value={profile.company}
+              onChange={handleChange}
+              placeholder="Company name"
+              disabled={!isEditing}
+              className="w-full mb-2 p-2 border rounded"
+            />
+
+            <input
+              name="industry"
+              value={profile.industry}
+              onChange={handleChange}
+              placeholder="Industry"
+              disabled={!isEditing}
+              className="w-full mb-2 p-2 border rounded"
+            />
+
+            <input
+              name="location"
+              value={profile.location}
+              onChange={handleChange}
+              placeholder="Location"
+              disabled={!isEditing}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {/* Contact */}
+          <div className="bg-gray-50 p-4 rounded-xl md:col-span-2">
+            <h3 className="text-lg font-medium mb-3">Contact</h3>
+
+            <input
+              name="phone"
+              value={profile.phone}
+              onChange={handleChange}
+              placeholder="Phone"
+              disabled={!isEditing}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default VerifyOtp;
+export default RecruiterProfile;
