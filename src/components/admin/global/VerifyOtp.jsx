@@ -68,7 +68,7 @@ const VerifyOtp = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:9000/otp/verify-otp?email=${encodeURIComponent(
+        `https://qa.api.rozgardwar.cloud/api//otp/verify-otp?email=${encodeURIComponent(
           email
         )}&role=${encodeURIComponent(role)}`,
         {
