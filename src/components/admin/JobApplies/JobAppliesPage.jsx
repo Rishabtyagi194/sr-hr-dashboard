@@ -8,9 +8,7 @@ import DiversityAndAdditionalDetails from "../resdex/DiversityAndAdditionalDetai
 import WorkAndDisplayDetails from "../resdex/WorkAndDisplayDetails";
 import { UserResponse } from "./UserResponse";
 
-/* ============================
-   Helper: normalize API data
-============================ */
+
 const normalizeApplications = (res) =>
   res?.job?.user_applications ||
   res?.data?.job?.user_applications ||

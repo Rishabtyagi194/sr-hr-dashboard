@@ -1,168 +1,255 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const RecruiterProfile = () => {
-  const location = useLocation();
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+
+const RESEND_TIME = 30;
+const MAX_ATTEMPTS = 3;
+
+const VerifyOtp = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // ✅ Get email & role ONLY from params
+  // from query params
   const params = new URLSearchParams(location.search);
 
-  const email = params.get("email") || "";
-  const role = params.get("role") || "";
+  const email = params.get("email");
+  const role = params.get("role");
 
-  const [profile, setProfile] = useState({
-    name: "",
-    company: "",
-    industry: "",
-    phone: "",
-    location: "",
-  });
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  // ✅ Redirect if params missing
+  const [timer, setTimer] = useState(RESEND_TIME);
+  const [attempts, setAttempts] = useState(0);
+
+  // invalid link guard
   useEffect(() => {
     if (!email || !role) {
-      navigate("/home"); // or login
+      setError("Invalid or expired verification link.");
     }
-  }, [email, role, navigate]);
+  }, [email, role]);
 
-  // ✅ Load other profile data from localStorage
+  // countdown
   useEffect(() => {
-    const savedProfile = JSON.parse(localStorage.getItem("profile")) || {};
+    if (timer === 0) return;
 
-    setProfile({
-      name: savedProfile.name || "",
-      company: savedProfile.company || "",
-      industry: savedProfile.industry || "",
-      phone: savedProfile.phone || "",
-      location: savedProfile.location || "",
-    });
-  }, []);
+    const interval = setInterval(() => {
+      setTimer((prev) => prev - 1);
+    }, 1000);
 
-  // ✅ Handle input
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+    return () => clearInterval(interval);
+  }, [timer]);
 
-    setProfile((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // ---------------- VERIFY OTP ----------------
+
+  const handleVerify = async () => {
+    if (!email || !role) return;
+
+    if (attempts >= MAX_ATTEMPTS) {
+      setError("OTP attempt limit reached. Please resend OTP.");
+      return;
+    }
+
+    if (otp.length !== 6) {
+      setError("Please enter valid 6-digit OTP");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(
+        `http://localhost:9000/otp/verify-otp?email=${encodeURIComponent(
+          email
+        )}&role=${encodeURIComponent(role)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            otp,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAttempts((prev) => prev + 1);
+        throw new Error(data.message || "OTP verification failed");
+      }
+
+      setSuccess(true);
+
+      setTimeout(() => {
+        navigate("/home");
+      }, 2000);
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ✅ Save
-  const handleSave = () => {
-    localStorage.setItem("profile", JSON.stringify(profile));
-    setIsEditing(false);
+
+  // ---------------- RESEND OTP ----------------
+
+  const handleResendOtp = async () => {
+    if (!email || !role) return;
+
+    setResendLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch(
+        "http://localhost:9000/otp/resend-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            role,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.message || "Failed to resend OTP"
+        );
+      }
+
+      setOtp("");
+      setAttempts(0);
+      setTimer(RESEND_TIME);
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setResendLoading(false);
+    }
   };
+
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b pb-4">
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-800">
-              Recruiter Profile
-            </h2>
-            <p className="text-sm text-gray-500">{email}</p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center px-4">
 
-          {isEditing ? (
-            <button
-              onClick={handleSave}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg"
-            >
-              Save
-            </button>
-          ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-            >
-              Edit Profile
-            </button>
-          )}
+      <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md">
+
+        {/* Icon */}
+        <div className="w-20 h-20 rounded-full bg-blue-100 mx-auto flex items-center justify-center mb-6">
+          <span className="text-4xl">🔐</span>
         </div>
 
-        {/* Info */}
-        <div className="grid md:grid-cols-2 gap-6 mt-6">
-          {/* Personal */}
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <h3 className="text-lg font-medium mb-3">Personal Info</h3>
+        <h1 className="text-3xl font-bold text-center mb-3">
+          Verify OTP
+        </h1>
 
-            <input
-              name="name"
-              value={profile.name}
-              onChange={handleChange}
-              placeholder="Enter name"
-              disabled={!isEditing}
-              className="w-full mb-2 p-2 border rounded"
-            />
+        <p className="text-center text-gray-500 mb-8 leading-7">
+          Enter the 6-digit OTP sent to
+          <br />
+          <span className="font-semibold text-black">
+            {email}
+          </span>
+        </p>
 
-            <input
-              value={email}
-              disabled
-              className="w-full mb-2 p-2 border rounded bg-gray-100"
-            />
 
-            <input
-              value={role}
-              disabled
-              className="w-full p-2 border rounded bg-gray-100"
-            />
-          </div>
-
-          {/* Company */}
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <h3 className="text-lg font-medium mb-3">Company</h3>
-
-            <input
-              name="company"
-              value={profile.company}
-              onChange={handleChange}
-              placeholder="Company name"
-              disabled={!isEditing}
-              className="w-full mb-2 p-2 border rounded"
-            />
-
-            <input
-              name="industry"
-              value={profile.industry}
-              onChange={handleChange}
-              placeholder="Industry"
-              disabled={!isEditing}
-              className="w-full mb-2 p-2 border rounded"
-            />
-
-            <input
-              name="location"
-              value={profile.location}
-              onChange={handleChange}
-              placeholder="Location"
-              disabled={!isEditing}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-
-          {/* Contact */}
-          <div className="bg-gray-50 p-4 rounded-xl md:col-span-2">
-            <h3 className="text-lg font-medium mb-3">Contact</h3>
-
-            <input
-              name="phone"
-              value={profile.phone}
-              onChange={handleChange}
-              placeholder="Phone"
-              disabled={!isEditing}
-              className="w-full p-2 border rounded"
-            />
-          </div>
+        {/* OTP INPUT */}
+        <div className="flex justify-center mb-6">
+          <InputOTP
+            maxLength={6}
+            value={otp}
+            onChange={(value) => {
+              setOtp(value);
+              if (error) setError("");
+            }}
+            disabled={success}
+          >
+            <InputOTPGroup>
+              <InputOTPSlot index={0}/>
+              <InputOTPSlot index={1}/>
+              <InputOTPSlot index={2}/>
+              <InputOTPSlot index={3}/>
+              <InputOTPSlot index={4}/>
+              <InputOTPSlot index={5}/>
+            </InputOTPGroup>
+          </InputOTP>
         </div>
+
+
+        <p className="text-center text-xs text-gray-500 mb-3">
+          Attempts left: {MAX_ATTEMPTS - attempts}
+        </p>
+
+
+        {error && (
+          <p className="text-red-500 text-center text-sm mb-4">
+            {error}
+          </p>
+        )}
+
+        {success && (
+          <p className="text-green-600 text-center mb-4 font-medium">
+            Email verified successfully. Redirecting...
+          </p>
+        )}
+
+
+        <button
+          onClick={handleVerify}
+          disabled={
+            loading ||
+            success ||
+            attempts >= MAX_ATTEMPTS
+          }
+          className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium disabled:opacity-60"
+        >
+          {loading ? "Verifying..." : "Verify OTP"}
+        </button>
+
+
+        {/* RESEND */}
+        {!success && (
+          <div className="text-center mt-6">
+            {timer > 0 ? (
+              <p className="text-gray-500">
+                Resend OTP in{" "}
+                <span className="font-semibold">
+                  {timer}s
+                </span>
+              </p>
+            ) : (
+              <button
+                onClick={handleResendOtp}
+                disabled={resendLoading}
+                className="text-blue-600 font-semibold hover:underline"
+              >
+                {resendLoading
+                  ? "Resending..."
+                  : "Resend OTP"}
+              </button>
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   );
 };
 
-export default RecruiterProfile;
+export default VerifyOtp;

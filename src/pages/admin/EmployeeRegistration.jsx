@@ -26,6 +26,7 @@ const EmployerRegistration = () => {
 
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -169,14 +170,15 @@ const EmployerRegistration = () => {
       localStorage.setItem("email", formData.employerEmail);
       localStorage.setItem("role", "employer_admin");
       
-      // ✅ success message
-      setSuccessMessage(data.message || "OTP sent successfully!");
+// Show success popup modal
+setShowSuccessModal(true);
 
-      setTimeout(() => {
-        navigate("/verify", {
-          state: { email: formData.employerEmail },
-        });
-      }, 1500);
+
+setTimeout(() => {
+  setShowSuccessModal(false);
+
+
+}, 10000);
     } catch (err) {
       setError(err.message || "Something went wrong");
     } finally {
@@ -499,7 +501,40 @@ const EmployerRegistration = () => {
           </div>
         </form>
       </div>
+      {showSuccessModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-[90%] text-center animate-scaleIn">
+      
+      {/* Success Icon */}
+      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+        <span className="text-3xl text-green-600">✓</span>
+      </div>
+
+      <h2 className="text-2xl font-semibold mb-3 text-gray-800">
+        Registration Successful
+      </h2>
+
+      <p className="text-gray-600 mb-6">
+        Verification link has been sent to your email.  
+        Please check your mail and verify your account.
+      </p>
+
+      <button
+        onClick={() => {
+          setShowSuccessModal(false);
+          navigate("/", {
+            state: { email: formData.employerEmail },
+          });
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
+      >
+       Back to Login
+      </button>
     </div>
+  </div>
+)}
+    </div>
+    
   );
 };
 
