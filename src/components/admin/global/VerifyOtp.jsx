@@ -113,7 +113,7 @@ const VerifyOtp = () => {
 
     try {
       const res = await fetch(
-        "http://localhost:9000/otp/resend-otp",
+        "https://qa.api.rozgardwar.cloud/otp/resend-otp",
         {
           method: "POST",
           headers: {
