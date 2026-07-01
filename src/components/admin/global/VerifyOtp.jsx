@@ -92,7 +92,7 @@ const VerifyOtp = () => {
       setSuccess(true);
 
       setTimeout(() => {
-        navigate("/home");
+        navigate("/");
       }, 2000);
 
     } catch (err) {
